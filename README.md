@@ -19,3 +19,9 @@ docker run -e POSTGRES_PASSWORD=mypassword -d -p 5432:5432 postgres
 PORT=3000
 DATABASE_URL=postgres://postgres:mypassword@localhost:5432/postgres
 ```
+
+## Applying changes to database
+Whenever a change is made to the schema, run the following command to update the actual database.
+```
+npx drizzle-kit push
+```
