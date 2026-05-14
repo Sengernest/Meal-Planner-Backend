@@ -13,6 +13,7 @@ npm run dev
 ```
 docker pull postgres
 docker run -e POSTGRES_PASSWORD=mypassword -d -p 5432:5432 postgres  
+```
 4. Set environment variables e.g.
 ```
 PORT=3000
