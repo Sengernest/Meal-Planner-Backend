@@ -1,7 +1,7 @@
 import db from "./db"
-import { UserPostData, usersTable } from "./schema"
+import { UserInsert, usersTable } from "./schema"
 
-const sampleUsers: UserPostData[] = [
+const sampleUsers: UserInsert[] = [
   {
     name: "David Laid",
     email: "davidlaid@gymshark.com",
