@@ -1,13 +1,7 @@
 import { eq } from "drizzle-orm";
 import db from "../db/db";
-import {
-  foodsTable,
-  foodsToRecipesTable,
-  Ingredient,
-  Recipe,
-  RecipeInsert,
-  recipesTable,
-} from "../db/schema";
+import { foodsToRecipesTable, recipesTable } from "../db/schema";
+import { RecipeInsert, Ingredient, Recipe } from "../types";
 
 export async function createRecipe(
   recipe: RecipeInsert,
@@ -34,15 +28,26 @@ export async function createRecipe(
   });
 }
 
-// export async function getRecipes(): Promise<Recipe[]> {
-//   return await db.select().from(recipesTable);
-// }
+export async function getRecipes(): Promise<Recipe[]> {
+  return await db.query.recipesTable.findMany({
+    with: {
+      ingredients: true,
+    },
+  });
+}
 
-// export async function getRecipe(recipeId: number): Promise<Recipe> {
-//   return (
-//     await db.select().from(recipesTable).where(eq(recipesTable.id, recipeId))
-//   )[0];
-// }
+export async function getRecipe(recipeId: number): Promise<Recipe> {
+  const recipe = await db.query.recipesTable.findFirst({
+    where: eq(recipesTable.id, recipeId),
+    with: {
+      ingredients: true,
+    },
+  });
+  if (!recipe) {
+    throw new Error("Recipe not found");
+  }
+  return recipe;
+}
 
 export async function updateRecipe(recipeId: number, newRecipe: RecipeInsert) {
   return await db
