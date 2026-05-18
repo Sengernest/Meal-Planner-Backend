@@ -16,8 +16,8 @@ export const foodsTable = pgTable("foods", {
   caloriesPer100g: integer(),
 });
 
-export type Food = typeof foodsTable.$inferSelect
-export type FoodInsert = typeof foodsTable.$inferInsert
+export type Food = typeof foodsTable.$inferSelect;
+export type FoodInsert = typeof foodsTable.$inferInsert;
 
 export const recipesTable = pgTable("recipes", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -25,8 +25,8 @@ export const recipesTable = pgTable("recipes", {
   creatorId: integer("author_id").references(() => usersTable.id),
 });
 
-export type Recipe = typeof recipesTable.$inferSelect
-export type RecipeInsert = typeof recipesTable.$inferInsert
+export type RecipeSelect = typeof recipesTable.$inferSelect;
+export type RecipeInsert = typeof recipesTable.$inferInsert;
 
 // Amount of a food item in a specific recipe, i.e. ingredients
 export const foodsToRecipesTable = pgTable(
@@ -39,14 +39,22 @@ export const foodsToRecipesTable = pgTable(
   (table) => [primaryKey({ columns: [table.foodId, table.recipeId] })],
 );
 
+export type Ingredient = Omit<
+  typeof foodsToRecipesTable.$inferSelect,
+  "recipeId"
+>;
+export type Recipe = RecipeSelect & { ingredients: Ingredient[] };
+
+const relations = 
+
 export const mealsTable = pgTable("meals", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   name: text().notNull(),
   creatorId: integer("author_id").references(() => usersTable.id),
 });
 
-export type Meal = typeof mealsTable.$inferSelect
-export type MealInsert = typeof mealsTable.$inferInsert
+export type Meal = typeof mealsTable.$inferSelect;
+export type MealInsert = typeof mealsTable.$inferInsert;
 
 // Amount of a recipe in a specific meal
 export const recipesToMealsTable = pgTable(
