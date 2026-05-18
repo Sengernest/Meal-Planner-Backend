@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import db from "../db/db";
-import { Meal, MealInsert, mealsTable } from "../db/schema";
+import { mealsTable } from "../db/schema";
+import { MealInsert, Meal } from "../types";
 
 export async function createMeal(meal: MealInsert) {
   return await db.insert(mealsTable).values(meal);
