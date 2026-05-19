@@ -17,15 +17,21 @@ export type Ingredient = {
   food: Food | null;
 };
 
-export type IngredientInput = {
-  amountInGrams: number;
-  foodId: number;
-};
-
 export type Recipe = typeof recipesTable.$inferSelect & {
   ingredients: Ingredient[];
 };
-export type RecipeInput = typeof recipesTable.$inferInsert
+
+export type CreateRecipePayload = {
+  recipeData: typeof recipesTable.$inferInsert;
+  ingredients: {
+    amountInGrams: number;
+    foodId: number;
+  }[];
+};
+
+export type UpdateRecipePayload = CreateRecipePayload & {
+  recipeId: number;
+};
 
 export type Meal = typeof mealsTable.$inferSelect;
 export type MealInput = typeof mealsTable.$inferInsert;

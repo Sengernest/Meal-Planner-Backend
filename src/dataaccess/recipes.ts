@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import db from "../db/db";
 import { foodsToRecipesTable, recipesTable } from "../db/schema";
-import { IngredientInput, Recipe, RecipeInput } from "../types";
+import { CreateRecipePayload, Recipe, UpdateRecipePayload } from "../types";
 
 export async function getRecipes(): Promise<Recipe[]> {
   return await db.query.recipesTable.findMany({
@@ -39,18 +39,17 @@ export async function getRecipe(recipeId: number): Promise<Recipe> {
 }
 
 export async function createRecipe(
-  recipe: RecipeInput,
-  ingredients: IngredientInput[],
+  payload: CreateRecipePayload,
 ): Promise<Recipe> {
   return await db.transaction(async (tx) => {
     const [newRecipe] = await tx
       .insert(recipesTable)
-      .values(recipe)
+      .values(payload.recipeData)
       .returning();
     await tx
       .insert(foodsToRecipesTable)
       .values(
-        ingredients.map((ingredient) => ({
+        payload.ingredients.map((ingredient) => ({
           ...ingredient,
           recipeId: newRecipe.id,
         })),
@@ -61,29 +60,27 @@ export async function createRecipe(
 }
 
 export async function updateRecipe(
-  recipeId: number,
-  recipeData: RecipeInput,
-  ingredients: IngredientInput[],
+  payload: UpdateRecipePayload,
 ): Promise<Recipe> {
   return await db.transaction(async (tx) => {
     await tx
       .update(recipesTable)
-      .set(recipeData)
-      .where(eq(recipesTable.id, recipeId));
+      .set(payload.recipeData)
+      .where(eq(recipesTable.id, payload.recipeId));
 
     // Delete all existing ingredients
     await tx
       .delete(foodsToRecipesTable)
-      .where(eq(foodsToRecipesTable.recipeId, recipeId));
+      .where(eq(foodsToRecipesTable.recipeId, payload.recipeId));
     // Replace with updated ingredients
     await tx.insert(foodsToRecipesTable).values(
-      ingredients.map((ingredient) => ({
+      payload.ingredients.map((ingredient) => ({
         ...ingredient,
-        recipeId,
+        recipeId: payload.recipeId,
       })),
     );
 
-    return getRecipe(recipeId);
+    return getRecipe(payload.recipeId);
   });
 }
 
