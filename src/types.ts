@@ -25,9 +25,7 @@ export type IngredientInput = {
 export type Recipe = typeof recipesTable.$inferSelect & {
   ingredients: Ingredient[];
 };
-export type RecipeInput = typeof recipesTable.$inferInsert & {
-  ingredients: IngredientInput[];
-};
+export type RecipeInput = typeof recipesTable.$inferInsert
 
 export type Meal = typeof mealsTable.$inferSelect;
 export type MealInput = typeof mealsTable.$inferInsert;
