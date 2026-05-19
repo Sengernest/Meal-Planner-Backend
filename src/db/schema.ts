@@ -11,7 +11,7 @@ export const usersTable = pgTable("users", {
 export const foodsTable = pgTable("foods", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   name: text().notNull(),
-  caloriesPer100g: integer(),
+  caloriesPer100g: integer().notNull(),
 });
 
 export const recipesTable = pgTable("recipes", {
@@ -30,10 +30,17 @@ export const foodsToRecipesTable = pgTable(
   {
     foodId: integer("food_id").references(() => foodsTable.id),
     recipeId: integer("recipe_id").references(() => recipesTable.id),
-    amountInGrams: integer(),
+    amountInGrams: integer().notNull(),
   },
   (table) => [primaryKey({ columns: [table.foodId, table.recipeId] })],
 );
+
+export const foodsToRecipesRelations = relations(foodsToRecipesTable, ({one}) => ({
+    food: one(foodsTable, {
+      fields: [foodsToRecipesTable.foodId],
+      references: [foodsTable.id]
+    })
+}))
 
 export const mealsTable = pgTable("meals", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),

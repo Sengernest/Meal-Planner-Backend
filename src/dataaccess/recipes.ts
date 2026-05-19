@@ -31,7 +31,14 @@ export async function createRecipe(
 export async function getRecipes(): Promise<Recipe[]> {
   return await db.query.recipesTable.findMany({
     with: {
-      ingredients: true,
+      ingredients: {
+        columns: {
+          amountInGrams: true,
+        },
+        with: {
+          food: true,
+        },
+      },
     },
   });
 }
@@ -40,7 +47,14 @@ export async function getRecipe(recipeId: number): Promise<Recipe> {
   const recipe = await db.query.recipesTable.findFirst({
     where: eq(recipesTable.id, recipeId),
     with: {
-      ingredients: true,
+      ingredients: {
+        columns: {
+          amountInGrams: true,
+        },
+        with: {
+          food: true,
+        },
+      },
     },
   });
   if (!recipe) {
