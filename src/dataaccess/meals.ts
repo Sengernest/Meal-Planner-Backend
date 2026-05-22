@@ -73,23 +73,22 @@ export async function createMeal(mealRequest: MealCreateRequest) {
 }
 
 export async function updateMeal(
-  mealId: number,
   mealRequest: MealUpdateRequest,
 ) {
   return await db.transaction(async (tx) => {
     await tx
       .update(mealsTable)
       .set(mealRequest.mealData)
-      .where(eq(mealsTable.id, mealId));
+      .where(eq(mealsTable.id, mealRequest.mealId));
 
     // Delete all existing recipe items in the meal
     await tx
       .delete(recipesToMealsTable)
-      .where(eq(recipesToMealsTable.mealId, mealId));
+      .where(eq(recipesToMealsTable.mealId, mealRequest.mealId));
     // Delete all existing food items in the meal
     await tx
       .delete(foodsToMealsTable)
-      .where(eq(foodsToMealsTable.mealId, mealId));
+      .where(eq(foodsToMealsTable.mealId, mealRequest.mealId));
 
     // Replace with updated recipe items
     if (mealRequest.recipeItems.length > 0) {
