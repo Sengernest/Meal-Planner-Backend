@@ -1,7 +1,11 @@
 import { eq } from "drizzle-orm";
 import db from "../db/db";
-import { mealsTable } from "../db/schema";
-import { Meal } from "../types";
+import {
+  foodsToMealsTable,
+  mealsTable,
+  recipesToMealsTable,
+} from "../db/schema";
+import { Meal, MealCreateRequest, MealUpdateRequest } from "../types";
 
 export async function getMeals(): Promise<Meal[]> {
   return await db.query.mealsTable.findMany({
@@ -42,16 +46,36 @@ export async function getMeal(mealId: number): Promise<Meal> {
   return meal;
 }
 
-// export async function createMeal(meal: ) {
-//   return await db.insert(mealsTable).values(meal);
-// }
+export async function createMeal(mealRequest: MealCreateRequest) {
+  return await db.transaction(async (tx) => {
+    const [newMeal] = await tx
+      .insert(mealsTable)
+      .values(mealRequest.mealData)
+      .returning();
+    if (mealRequest.recipeItems.length > 0) {
+      await tx.insert(recipesToMealsTable).values(
+        mealRequest.recipeItems.map((recipeItem) => ({
+          ...recipeItem,
+          mealId: newMeal.id,
+        })),
+      );
+    }
+    if (mealRequest.foodItems.length > 0) {
+      await tx.insert(foodsToMealsTable).values(
+        mealRequest.foodItems.map((foodItem) => ({
+          ...foodItem,
+          mealId: newMeal.id,
+        })),
+      );
+    }
+    return getMeal(newMeal.id);
+  });
+}
 
-// export async function updateMeal(mealId: number, newMeal: ) {
-//   return await db
-//     .update(mealsTable)
-//     .set(newMeal)
-//     .where(eq(mealsTable.id, mealId));
-// }
+export async function updateMeal(
+  mealId: number,
+  mealRequest: MealUpdateRequest,
+) {}
 
 export async function deleteMeal(mealId: number) {
   return await db.delete(mealsTable).where(eq(mealsTable.id, mealId));

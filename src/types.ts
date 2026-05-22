@@ -18,7 +18,7 @@ export type RecipeFood = typeof foodsToRecipesTable.$inferSelect & {
   food: Food;
 };
 
-export type Recipe = typeof recipesTable.$inferSelect
+export type Recipe = typeof recipesTable.$inferSelect;
 export type RecipeWithIngredients = Recipe & {
   ingredients: RecipeFood[];
 };
@@ -47,3 +47,19 @@ export type RecipeCreateRequest = {
 export type RecipeUpdateRequest = RecipeCreateRequest & {
   recipeId: number;
 };
+
+export type MealCreateRequest = {
+  mealData: typeof mealsTable.$inferInsert;
+  recipeItems: {
+    recipeId: number;
+    servings: number;
+  }[];
+  foodItems: {
+    foodId: number;
+    amountInGrams: number;
+  }[];
+};
+
+export type MealUpdateRequest = MealCreateRequest & {
+  mealId: number
+}

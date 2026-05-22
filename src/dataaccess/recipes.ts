@@ -33,17 +33,17 @@ export async function getRecipe(recipeId: number): Promise<Recipe> {
 }
 
 export async function createRecipe(
-  payload: RecipeCreateRequest,
+  recipeRequest: RecipeCreateRequest,
 ): Promise<Recipe> {
   return await db.transaction(async (tx) => {
     const [newRecipe] = await tx
       .insert(recipesTable)
-      .values(payload.recipeData)
+      .values(recipeRequest.recipeData)
       .returning();
     await tx
       .insert(foodsToRecipesTable)
       .values(
-        payload.ingredients.map((ingredient) => ({
+        recipeRequest.ingredients.map((ingredient) => ({
           ...ingredient,
           recipeId: newRecipe.id,
         })),
@@ -54,27 +54,27 @@ export async function createRecipe(
 }
 
 export async function updateRecipe(
-  payload: RecipeUpdateRequest,
+  recipeRequest: RecipeUpdateRequest,
 ): Promise<Recipe> {
   return await db.transaction(async (tx) => {
     await tx
       .update(recipesTable)
-      .set(payload.recipeData)
-      .where(eq(recipesTable.id, payload.recipeId));
+      .set(recipeRequest.recipeData)
+      .where(eq(recipesTable.id, recipeRequest.recipeId));
 
     // Delete all existing ingredients
     await tx
       .delete(foodsToRecipesTable)
-      .where(eq(foodsToRecipesTable.recipeId, payload.recipeId));
+      .where(eq(foodsToRecipesTable.recipeId, recipeRequest.recipeId));
     // Replace with updated ingredients
     await tx.insert(foodsToRecipesTable).values(
-      payload.ingredients.map((ingredient) => ({
+      recipeRequest.ingredients.map((ingredient) => ({
         ...ingredient,
-        recipeId: payload.recipeId,
+        recipeId: recipeRequest.recipeId,
       })),
     );
 
-    return getRecipe(payload.recipeId);
+    return getRecipe(recipeRequest.recipeId);
   });
 }
 
