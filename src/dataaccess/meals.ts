@@ -75,7 +75,44 @@ export async function createMeal(mealRequest: MealCreateRequest) {
 export async function updateMeal(
   mealId: number,
   mealRequest: MealUpdateRequest,
-) {}
+) {
+  return await db.transaction(async (tx) => {
+    await tx
+      .update(mealsTable)
+      .set(mealRequest.mealData)
+      .where(eq(mealsTable.id, mealId));
+
+    // Delete all existing recipe items in the meal
+    await tx
+      .delete(recipesToMealsTable)
+      .where(eq(recipesToMealsTable.mealId, mealId));
+    // Delete all existing food items in the meal
+    await tx
+      .delete(foodsToMealsTable)
+      .where(eq(foodsToMealsTable.mealId, mealId));
+
+    // Replace with updated recipe items
+    if (mealRequest.recipeItems.length > 0) {
+      await tx.insert(recipesToMealsTable).values(
+        mealRequest.recipeItems.map((recipeItem) => ({
+          ...recipeItem,
+          mealId: mealRequest.mealId,
+        })),
+      );
+    }
+    // Replace with updated meal items
+    if (mealRequest.foodItems.length > 0) {
+      await tx.insert(foodsToMealsTable).values(
+        mealRequest.foodItems.map((foodItem) => ({
+          ...foodItem,
+          mealId: mealRequest.mealId,
+        })),
+      );
+    }
+
+    return getMeal(mealRequest.mealId);
+  });
+}
 
 export async function deleteMeal(mealId: number) {
   return await db.delete(mealsTable).where(eq(mealsTable.id, mealId));
