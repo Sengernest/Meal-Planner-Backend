@@ -6,8 +6,16 @@ import { MealInput, Meal } from "../types";
 export async function getMeals(): Promise<Meal[]> {
   return await db.query.mealsTable.findMany({
     with: {
-      recipes: true,
-      foods: true,
+      recipeItems: {
+        with: {
+          recipe: true,
+        },
+      },
+      foodItems: {
+        with: {
+          food: true,
+        },
+      },
     },
   });
 }
@@ -16,8 +24,16 @@ export async function getMeal(mealId: number): Promise<Meal> {
   const meal = await db.query.mealsTable.findFirst({
     where: eq(mealsTable.id, mealId),
     with: {
-      recipes: true,
-      foods: true,
+      recipeItems: {
+        with: {
+          recipe: true,
+        },
+      },
+      foodItems: {
+        with: {
+          food: true,
+        },
+      },
     },
   });
   if (!meal) {

@@ -78,9 +78,29 @@ export const foodsToMealsTable = pgTable("foods_to_meal_items", {
 });
 
 export const mealsRelations = relations(mealsTable, ({ many }) => ({
-  recipes: many(recipesToMealsTable),
-  foods: many(foodsToMealsTable),  
+  recipeItems: many(recipesToMealsTable),
+  foodItems: many(foodsToMealsTable),
 }));
+
+export const recipesToMealsRelations = relations(
+  recipesToMealsTable,
+  ({ one }) => ({
+    recipe: one(recipesTable, {
+      fields: [recipesToMealsTable.recipeId],
+      references: [recipesTable.id],
+    }),
+  }),
+);
+
+export const foodsToMealsRelations = relations(
+  foodsToMealsTable,
+  ({ one }) => ({
+    food: one(foodsTable, {
+      fields: [foodsToMealsTable.foodId],
+      references: [foodsTable.id],
+    }),
+  }),
+);
 
 export const mealLogsTable = pgTable("meal_logs", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
