@@ -6,6 +6,13 @@ import {
   handleGetRecipes,
   handleUpdateRecipe,
 } from "./handlers/recipes";
+import {
+  handleGetMeals,
+  handleGetMeal,
+  handleCreateMeal,
+  handleUpdateMeal,
+  handleDeleteMeal,
+} from "./handlers/meals";
 
 const app = express();
 app.use(json());
@@ -19,5 +26,11 @@ app.get("/recipes/:id", handleGetRecipe);
 app.post("/recipes", handleCreateRecipe);
 app.put("/recipes/:id", handleUpdateRecipe);
 app.delete("/recipes/:id", handleDeleteRecipe);
+
+app.get("/meals", handleGetMeals);
+app.get("/meals/:id", handleGetMeal);
+app.post("/meals", handleCreateMeal);
+app.put("/meals/:id", handleUpdateMeal);
+app.delete("/meals/:id", handleDeleteMeal);
 
 export default app;
