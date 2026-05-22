@@ -20,27 +20,34 @@ export const recipesTable = pgTable("recipes", {
   creatorId: integer("author_id").references(() => usersTable.id),
 });
 
-export const recipesRelations = relations(recipesTable, ({ many }) => ({
-  ingredients: many(foodsToRecipesTable),
-}));
-
 // Amount of a food item in a specific recipe, i.e. ingredients
 export const foodsToRecipesTable = pgTable(
   "foods_to_recipes",
   {
-    foodId: integer("food_id").references(() => foodsTable.id).notNull(),
-    recipeId: integer("recipe_id").references(() => recipesTable.id).notNull(),
+    foodId: integer("food_id")
+      .references(() => foodsTable.id)
+      .notNull(),
+    recipeId: integer("recipe_id")
+      .references(() => recipesTable.id)
+      .notNull(),
     amountInGrams: integer().notNull(),
   },
   (table) => [primaryKey({ columns: [table.foodId, table.recipeId] })],
 );
 
-export const foodsToRecipesRelations = relations(foodsToRecipesTable, ({one}) => ({
+export const recipesRelations = relations(recipesTable, ({ many }) => ({
+  ingredients: many(foodsToRecipesTable),
+}));
+
+export const foodsToRecipesRelations = relations(
+  foodsToRecipesTable,
+  ({ one }) => ({
     food: one(foodsTable, {
       fields: [foodsToRecipesTable.foodId],
-      references: [foodsTable.id]
-    })
-}))
+      references: [foodsTable.id],
+    }),
+  }),
+);
 
 export const mealsTable = pgTable("meals", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -48,16 +55,32 @@ export const mealsTable = pgTable("meals", {
   creatorId: integer("author_id").references(() => usersTable.id),
 });
 
-// Amount of a recipe in a specific meal
-export const recipesToMealsTable = pgTable(
-  "recipes_to_meals",
-  {
-    recipeId: integer("recipe_id").references(() => recipesTable.id),
-    mealId: integer("meal_id").references(() => mealsTable.id),
-    quantity: integer(),
-  },
-  (table) => [primaryKey({ columns: [table.recipeId, table.mealId] })],
-);
+// Number of servings of a recipe in a specific meal
+export const recipesToMealsTable = pgTable("recipes_to_meal_items", {
+  recipeId: integer("recipe_id")
+    .references(() => recipesTable.id)
+    .notNull(),
+  mealId: integer("meal_id")
+    .references(() => mealsTable.id)
+    .notNull(),
+  servings: integer().notNull(),
+});
+
+// Amount of a food in a specific meal
+export const foodsToMealsTable = pgTable("foods_to_meal_items", {
+  foodId: integer("food_id")
+    .references(() => foodsTable.id)
+    .notNull(),
+  mealId: integer("meal_id")
+    .references(() => mealsTable.id)
+    .notNull(),
+  amountInGrams: integer().notNull(),
+});
+
+export const mealsRelations = relations(mealsTable, ({ many }) => ({
+  recipes: many(recipesToMealsTable),
+  foods: many(foodsToMealsTable),  
+}));
 
 export const mealLogsTable = pgTable("meal_logs", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
