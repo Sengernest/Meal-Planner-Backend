@@ -1,5 +1,4 @@
 import z from "zod";
-import { createMealSchema } from "./meals";
 
 export const createRecipeSchema = z.object({
   name: z.string(),
@@ -12,7 +11,7 @@ export const createRecipeSchema = z.object({
   ),
 });
 
-export const updateRecipeSchema = createMealSchema.extend({
+export const updateRecipeSchema = createRecipeSchema.extend({
   recipeId: z.int().positive(),
 });
 
