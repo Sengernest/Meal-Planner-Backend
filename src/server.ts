@@ -15,9 +15,9 @@ import {
   handleDeleteMeal,
   handleGetUserMeals,
 } from "./handlers/meals";
-import { bodyValidator, idValidator } from "./api/validation";
-import { createRecipeSchema, updateRecipeSchema } from "./api/schemas/recipes";
-import { createMealSchema, updateMealSchema } from "./api/schemas/meals";
+import { bodyValidator, idValidator } from "./middleware/validation";
+import { createRecipeSchema, updateRecipeSchema } from "./dto/recipes";
+import { createMealSchema, updateMealSchema } from "./dto/meals";
 
 const app = express();
 app.use(json());

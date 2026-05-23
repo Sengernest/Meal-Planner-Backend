@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import db from "../db/db";
 import { foodsToRecipesTable, recipesTable } from "../db/schema";
 import { Recipe } from "../types";
-import { CreateRecipeSchema, UpdateRecipeSchema } from "../api/schemas/recipes";
+import { CreateRecipeSchema, UpdateRecipeSchema } from "../dto/recipes";
 
 export async function getRecipes(): Promise<Recipe[]> {
   return await db.query.recipesTable.findMany({

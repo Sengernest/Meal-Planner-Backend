@@ -6,7 +6,7 @@ import {
   recipesToMealsTable,
 } from "../db/schema";
 import { Meal } from "../types";
-import { CreateMealSchema, UpdateMealSchema } from "../api/schemas/meals";
+import { CreateMealSchema, UpdateMealSchema } from "../dto/meals";
 
 export async function getMeals(): Promise<Meal[]> {
   return await db.query.mealsTable.findMany({
