@@ -6,7 +6,7 @@ export const createRecipeSchema = z.object({
   ingredients: z.array(
     z.object({
       foodId: z.int().positive(),
-      amountInGrams: z.number().positive(),
+      amount: z.number().positive(),
     }),
   ),
 });
