@@ -16,9 +16,12 @@ import {
   handleGetUserMeals,
 } from "./handlers/meals";
 import { handleSignup, handleLogin, handleLogout } from "./handlers/auth";
+import { requireAuth } from "./middleware/auth";
 import { bodyValidator, idValidator } from "./middleware/validation";
+import { signupSchema, loginSchema } from "./dto/auth";
 import { createRecipeSchema, updateRecipeSchema } from "./dto/recipes";
 import { createMealSchema, updateMealSchema } from "./dto/meals";
+
 
 const app = express();
 const cookieParser = require("cookie-parser");
@@ -30,8 +33,8 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Hello world!");
 });
 
-app.post('/signup', handleSignup);
-app.post('/login', handleLogin);
+app.post('/signup', bodyValidator(signupSchema), handleSignup);
+app.post('/login', bodyValidator(loginSchema), handleLogin);
 app.post('/logout', handleLogout);
 
 app.get("/recipes", handleGetRecipes);

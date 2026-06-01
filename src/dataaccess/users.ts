@@ -43,3 +43,7 @@ export async function getUserByEmail(email: string): Promise<User | null> {
     .where(eq(usersTable.email, email));
   return user.length > 0 ? user[0] : null;
 } 
+
+export async function deleteUser(userId: number) {
+  await db.delete(usersTable).where(eq(usersTable.id, userId));
+} 
