@@ -9,19 +9,25 @@ npm install
 ```
 npm run dev
 ```
-3. Pull PostgreSQL image and start a Postgres instance
+3. Start a Postgres instance using docker compose
 ```
-docker pull postgres
-docker run -e POSTGRES_PASSWORD=mypassword -d -p 5432:5432 postgres  
+docker compose up -d
 ```
+** NOTE:  Ensure you do not already have a local Postgres instance running on port 5432 **  
 4. Set environment variables e.g.
 ```
 PORT=3000
 DATABASE_URL=postgres://postgres:mypassword@localhost:5432/postgres
 ```
 
-## Applying changes to database
+## Database
+### Applying changes to database
 Whenever a change is made to the schema, run the following command to update the actual database.
 ```
 npx drizzle-kit push
+```
+
+### Accessing database with psql
+```
+docker exec -it <container_name> psql -U postgres
 ```
