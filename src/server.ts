@@ -16,11 +16,13 @@ import {
   handleGetUserMeals,
 } from "./handlers/meals";
 import { handleSignup, handleLogin, handleLogout } from "./handlers/auth";
+import { handleCreateMacroGoals, handleGetMacroGoals } from "./handlers/macroGoals";
 import { requireAuth } from "./middleware/auth";
 import { bodyValidator, idValidator } from "./middleware/validation";
 import { signupSchema, loginSchema } from "./dto/auth";
 import { createRecipeSchema, updateRecipeSchema } from "./dto/recipes";
 import { createMealSchema, updateMealSchema } from "./dto/meals";
+import { calculateMacroGoalsSchema } from "./dto/macroGoals";
 
 
 const app = express();
@@ -60,5 +62,8 @@ app.put(
   handleUpdateMeal,
 );
 app.delete("/meals/:id", idValidator(), handleDeleteMeal);
+
+app.post("/macro-goals", requireAuth, bodyValidator(calculateMacroGoalsSchema), handleCreateMacroGoals);
+app.get("/macro-goals", requireAuth, handleGetMacroGoals);
 
 export default app;

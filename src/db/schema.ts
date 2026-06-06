@@ -143,3 +143,19 @@ export const mealsToMealPlansTable = pgTable(
   },
   (table) => [primaryKey({ columns: [table.mealPlanId, table.mealSlot] })],
 );
+
+
+export const macroGoalsTable = pgTable("macro_goals", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  creatorId: integer("creator_id").references(() => usersTable.id),
+  gender: text().notNull(), 
+  age: integer().notNull(),
+  height: numeric({ mode: "number" }).notNull(),
+  weight: numeric({ mode: "number" }).notNull(),
+  activityLevel: text().notNull(), // sedentary, light, moderate, active, very_active
+  goal: text().notNull(), // cutting, maintain, bulking 
+  calories: integer().notNull(),
+  carbs: integer().notNull(),
+  protein: integer().notNull(),
+  fat: integer().notNull(),
+});
