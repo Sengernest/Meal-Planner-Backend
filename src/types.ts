@@ -7,6 +7,9 @@ import {
   recipesToMealsTable,
   foodsToMealsTable,
   macroGoalsTable,
+  recipesToMealLogsTable,
+  mealLogsTable,
+  foodsToMealLogsTable,
 } from "./db/schema";
 
 export type User = typeof usersTable.$inferSelect;
@@ -49,10 +52,23 @@ export type Meal = typeof mealsTable.$inferSelect & {
   foodItems: MealFood[];
 };
 
+export type MealLogRecipe = typeof recipesToMealLogsTable.$inferSelect & {
+  recipe: Recipe;
+};
+
+export type MealLogFood = typeof foodsToMealLogsTable.$inferSelect & {
+  food: Food;
+};
+
+export type MealLog = typeof mealLogsTable.$inferSelect & {
+  recipeItems: MealLogRecipe[];
+  foodItems: MealLogFood[];
+};
+
 export type MacroGoals = typeof macroGoalsTable.$inferSelect & {
   calories: number;
   carbs: number;
-  protein: number; 
+  protein: number;
   fat: number;
 };
 
@@ -61,11 +77,6 @@ export type MacroGoalInput = {
   gender: "male" | "female";
   weight: number;
   height: number;
-  activityLevel:
-    | "sedentary"
-    | "light"
-    | "moderate"
-    | "active"
-    | "very_active";
+  activityLevel: "sedentary" | "light" | "moderate" | "active" | "very_active";
   goal: "cutting" | "maintain" | "bulking";
 };

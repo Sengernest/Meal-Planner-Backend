@@ -4,6 +4,7 @@ export const createMealLogSchema = z.object({
   name: z.string(),
   userId: z.int().positive(),
   logDate: z.date(), 
+  slot: z.int().positive(),
   mealId: z.int().positive().optional(), // Not null if saved meal, null if ad-hoc meal
   recipeItems: z.array(
     z.object({
