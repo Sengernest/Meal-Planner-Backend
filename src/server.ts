@@ -16,14 +16,23 @@ import {
   handleGetUserMeals,
 } from "./handlers/meals";
 import { handleSignup, handleLogin, handleLogout } from "./handlers/auth";
-import { handleCreateMacroGoals, handleGetMacroGoals } from "./handlers/macroGoals";
+import {
+  handleCreateMacroGoals,
+  handleGetMacroGoals,
+} from "./handlers/macroGoals";
 import { requireAuth } from "./middleware/auth";
 import { bodyValidator, idValidator } from "./middleware/validation";
 import { signupSchema, loginSchema } from "./dto/auth";
 import { createRecipeSchema, updateRecipeSchema } from "./dto/recipes";
 import { createMealSchema, updateMealSchema } from "./dto/meals";
 import { calculateMacroGoalsSchema } from "./dto/macroGoals";
-
+import {
+  handleCreateMealLog,
+  handleDeleteMealLog,
+  handleGetMealLogs,
+  handleUpdateMealLog,
+} from "./handlers/mealLogs";
+import { createMealLogSchema, updateMealLogSchema } from "./dto/mealLogs";
 
 const app = express();
 const cookieParser = require("cookie-parser");
@@ -35,10 +44,11 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Hello world!");
 });
 
-app.post('/signup', bodyValidator(signupSchema), handleSignup);
-app.post('/login', bodyValidator(loginSchema), handleLogin);
-app.post('/logout', handleLogout);
+app.post("/signup", bodyValidator(signupSchema), handleSignup);
+app.post("/login", bodyValidator(loginSchema), handleLogin);
+app.post("/logout", handleLogout);
 
+// Recipes
 app.get("/recipes", handleGetRecipes);
 app.get("/users/:id/recipes", idValidator(), handleGetUserRecipes);
 app.get("/recipes/:id", idValidator(), handleGetRecipe);
@@ -51,6 +61,7 @@ app.put(
 );
 app.delete("/recipes/:id", idValidator(), handleDeleteRecipe);
 
+// Meals
 app.get("/meals", handleGetMeals);
 app.get("/users/:id/meals", idValidator(), handleGetUserMeals);
 app.get("/meals/:id", idValidator(), handleGetMeal);
@@ -63,7 +74,19 @@ app.put(
 );
 app.delete("/meals/:id", idValidator(), handleDeleteMeal);
 
-app.post("/macro-goals", requireAuth, bodyValidator(calculateMacroGoalsSchema), handleCreateMacroGoals);
+// Meal logs
+app.get("/users/:id/meal-logs", idValidator(), handleGetMealLogs); // ?date=
+app.post("/meal-logs", bodyValidator(createMealLogSchema), handleCreateMealLog);
+app.put("/meal-logs/:id", idValidator(), bodyValidator(updateMealLogSchema), handleUpdateMealLog);
+app.delete("/meal-logs/:id", idValidator(), handleDeleteMealLog);
+
+// Macro goals
+app.post(
+  "/macro-goals",
+  requireAuth,
+  bodyValidator(calculateMacroGoalsSchema),
+  handleCreateMacroGoals,
+);
 app.get("/macro-goals", requireAuth, handleGetMacroGoals);
 
 export default app;
