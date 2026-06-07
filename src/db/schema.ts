@@ -75,26 +75,34 @@ export const mealsTable = pgTable("meals", {
 });
 
 // Number of servings of a recipe in a specific meal
-export const recipesToMealsTable = pgTable("recipes_to_meal_items", {
-  recipeId: integer("recipe_id")
-    .references(() => recipesTable.id)
-    .notNull(),
-  mealId: integer("meal_id")
-    .references(() => mealsTable.id)
-    .notNull(),
-  servings: integer().notNull(),
-});
+export const recipesToMealsTable = pgTable(
+  "recipes_to_meals",
+  {
+    recipeId: integer("recipe_id")
+      .references(() => recipesTable.id)
+      .notNull(),
+    mealId: integer("meal_id")
+      .references(() => mealsTable.id)
+      .notNull(),
+    servings: integer().notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.recipeId, table.mealId] })],
+);
 
 // Amount of a food in a specific meal
-export const foodsToMealsTable = pgTable("foods_to_meal_items", {
-  foodId: integer("food_id")
-    .references(() => foodsTable.id)
-    .notNull(),
-  mealId: integer("meal_id")
-    .references(() => mealsTable.id)
-    .notNull(),
-  amountInGrams: integer().notNull(),
-});
+export const foodsToMealsTable = pgTable(
+  "foods_to_meals",
+  {
+    foodId: integer("food_id")
+      .references(() => foodsTable.id)
+      .notNull(),
+    mealId: integer("meal_id")
+      .references(() => mealsTable.id)
+      .notNull(),
+    amount: numeric({ mode: "number" }).notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.foodId, table.mealId] })],
+);
 
 export const mealsRelations = relations(mealsTable, ({ many }) => ({
   recipeItems: many(recipesToMealsTable),
@@ -124,9 +132,40 @@ export const foodsToMealsRelations = relations(
 export const mealLogsTable = pgTable("meal_logs", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   mealId: integer("meal_id").references(() => mealsTable.id),
-  consumerId: integer("consumer_id").references(() => usersTable.id),
-  consumedAt: timestamp(),
+  userId: integer("user_id")
+    .references(() => usersTable.id)
+    .notNull(),
+  logDate: timestamp(),
+  slot: integer().notNull(), // e.g. Meal 1, Meal 2
 });
+
+export const recipesToMealLogsTable = pgTable(
+  "recipes_to_meal_logs",
+  {
+    mealLogId: integer("meal_log_id")
+      .references(() => mealLogsTable.id)
+      .notNull(),
+    recipeId: integer("recipe_id")
+      .references(() => recipesTable.id)
+      .notNull(),
+    servings: integer().notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.mealLogId, table.recipeId] })],
+);
+
+export const foodsToMealLogsTable = pgTable(
+  "foods_to_meal_logs",
+  {
+    mealLogId: integer("meal_log_id")
+      .references(() => mealLogsTable.id)
+      .notNull(),
+    foodId: integer("food_id")
+      .references(() => foodsTable.id)
+      .notNull(),
+    amount: numeric({ mode: "number" }).notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.mealLogId, table.foodId] })],
+);
 
 export const mealPlansTable = pgTable("meal_plans", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -144,16 +183,15 @@ export const mealsToMealPlansTable = pgTable(
   (table) => [primaryKey({ columns: [table.mealPlanId, table.mealSlot] })],
 );
 
-
 export const macroGoalsTable = pgTable("macro_goals", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   creatorId: integer("creator_id").references(() => usersTable.id),
-  gender: text().notNull(), 
+  gender: text().notNull(),
   age: integer().notNull(),
   height: numeric({ mode: "number" }).notNull(),
   weight: numeric({ mode: "number" }).notNull(),
   activityLevel: text().notNull(), // sedentary, light, moderate, active, very_active
-  goal: text().notNull(), // cutting, maintain, bulking 
+  goal: text().notNull(), // cutting, maintain, bulking
   calories: integer().notNull(),
   carbs: integer().notNull(),
   protein: integer().notNull(),
