@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { getMealLogs } from "../dataaccess/mealLogs";
 
 export async function handleGetMealLogs(req: Request, res: Response) {
   const userId = Number(req.params.id)

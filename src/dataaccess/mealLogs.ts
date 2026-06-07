@@ -3,19 +3,13 @@ import db from "../db/db";
 import {
   foodsToMealLogsTable,
   mealLogsTable,
-  recipesToMealLogsTable
+  recipesToMealLogsTable,
 } from "../db/schema";
-import {
-  CreateMealLogSchema,
-  UpdateMealLogSchema
-} from "../dto/mealLogs";
+import { CreateMealLogSchema, UpdateMealLogSchema } from "../dto/mealLogs";
 import { MealLog } from "../types";
 
 // Get meal logs by a user on a given date
-export async function getMealLogs(
-  userId: number,
-  logDate: Date,
-): Promise<MealLog[]> {
+async function getMealLogs(userId: number, logDate: Date): Promise<MealLog[]> {
   return await db.query.mealLogsTable.findMany({
     where: and(
       eq(mealLogsTable.userId, userId),
@@ -44,7 +38,7 @@ export async function getMealLogs(
   });
 }
 
-export async function getMealLog(mealLogId: number): Promise<MealLog> {
+async function getMealLog(mealLogId: number): Promise<MealLog> {
   const mealLog = await db.query.mealLogsTable.findFirst({
     where: eq(mealLogsTable.id, mealLogId),
     with: {
@@ -74,7 +68,7 @@ export async function getMealLog(mealLogId: number): Promise<MealLog> {
   return mealLog;
 }
 
-export async function createMealLog(mealLog: CreateMealLogSchema) {
+async function createMealLog(mealLog: CreateMealLogSchema) {
   return await db.transaction(async (tx) => {
     const [newMealLog] = await tx
       .insert(mealLogsTable)
@@ -105,7 +99,7 @@ export async function createMealLog(mealLog: CreateMealLogSchema) {
   });
 }
 
-export async function updateMealLog(mealLog: UpdateMealLogSchema) {
+async function updateMealLog(mealLog: UpdateMealLogSchema) {
   return await db.transaction(async (tx) => {
     await tx
       .update(mealLogsTable)
@@ -147,6 +141,13 @@ export async function updateMealLog(mealLog: UpdateMealLogSchema) {
   });
 }
 
-export async function deleteMealLog(mealLogId: number) {
+async function deleteMealLog(mealLogId: number) {
   return await db.delete(mealLogsTable).where(eq(mealLogsTable.id, mealLogId));
 }
+
+export const mealLogsRepository = {
+  getMealLogs,
+  createMealLog,
+  updateMealLog,
+  deleteMealLog,
+};
