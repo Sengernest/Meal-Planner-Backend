@@ -52,6 +52,13 @@ export type Meal = typeof mealsTable.$inferSelect & {
   foodItems: MealFood[];
 };
 
+// Food with amount, corresponding to the recipe or meal in which it is contained
+export type FoodItem = RecipeFood | MealFood
+
+export type MealWithNutrition = Meal & {
+  nutrition: Nutrition
+}
+
 export type MealLogRecipe = typeof recipesToMealLogsTable.$inferSelect & {
   recipe: Recipe;
 };

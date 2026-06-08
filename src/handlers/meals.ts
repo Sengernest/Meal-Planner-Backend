@@ -1,42 +1,35 @@
 import { Request, Response } from "express";
-import {
-  createMeal,
-  deleteMeal,
-  getMeal,
-  getMeals,
-  getUserMeals,
-  updateMeal,
-} from "../dataaccess/meals";
+import { mealsService } from '../services/meals';
 
 export async function handleGetMeals(req: Request, res: Response) {
-  const meals = await getMeals();
+  const meals = await mealsService.getMeals();
   res.json(meals);
 }
 
 export async function handleGetUserMeals(req: Request, res: Response) {
   const userId = Number(req.params.id);
-  const meals = await getUserMeals(userId);
+  const meals = await mealsService.getUserMeals(userId);
   res.json(meals);
 }
 
 export async function handleGetMeal(req: Request, res: Response) {
   const mealId = Number(req.params.id);
-  const meal = await getMeal(mealId);
+  const meal = await mealsService.getMeal(mealId);
   res.json(meal);
 }
 
 export async function handleCreateMeal(req: Request, res: Response) {
-  const meal = await createMeal(req.body);
+  const meal = await mealsService.createMeal(req.body);
   res.json(meal);
 }
 
 export async function handleUpdateMeal(req: Request, res: Response) {
-  const updatedMeal = await updateMeal(req.body);
+  const updatedMeal = await mealsService.updateMeal(req.body);
   res.json(updatedMeal);
 }
 
 export async function handleDeleteMeal(req: Request, res: Response) {
   const mealId = Number(req.params.id);
-  await deleteMeal(mealId);
+  await mealsService.deleteMeal(mealId);
   res.json({ message: `Deleted meal: ${mealId}` });
 }

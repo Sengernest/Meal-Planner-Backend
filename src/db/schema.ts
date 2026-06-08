@@ -31,7 +31,7 @@ export const foodsTable = pgTable("foods", {
   calories: numeric({ mode: "number" }).notNull(),
   protein: numeric({ mode: "number" }).notNull(),
   fat: numeric({ mode: "number" }).notNull(),
-  carb: numeric({ mode: "number" }).notNull(),
+  carbs: numeric({ mode: "number" }).notNull(),
 });
 
 export const recipesTable = pgTable("recipes", {

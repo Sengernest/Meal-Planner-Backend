@@ -1,34 +1,18 @@
 import { recipesRepository } from "../dataaccess/recipes";
 import { CreateRecipeSchema, UpdateRecipeSchema } from "../dto/recipes";
-import { Nutrition, Recipe, RecipeFood, RecipeWithNutrition } from "../types";
-
-function accumulateNutrition(recipe: Recipe): Nutrition {
-  return recipe.ingredients.reduce(
-    (acc, ingredient) => {
-      const factor = ingredient.amount / 100;
-
-      acc.calories += factor * ingredient.food.calories;
-      acc.macros.protein += factor * ingredient.food.protein;
-      acc.macros.carbs += factor * ingredient.food.carb;
-      acc.macros.fat += factor * ingredient.food.fat;
-
-      return acc;
-    },
-    {
-      calories: 0,
-      macros: {
-        protein: 0,
-        carbs: 0,
-        fat: 0,
-      },
-    },
-  );
-}
+import {
+  FoodItem,
+  Nutrition,
+  Recipe,
+  RecipeFood,
+  RecipeWithNutrition,
+} from "../types";
+import { sumNutrition } from "./nutrition";
 
 function withNutrition(recipe: Recipe): RecipeWithNutrition {
   return {
     ...recipe,
-    nutrition: accumulateNutrition(recipe),
+    nutrition: sumNutrition(recipe.ingredients),
   };
 }
 
