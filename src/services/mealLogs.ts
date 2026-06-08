@@ -1,17 +1,35 @@
 import { mealLogsRepository } from "../dataaccess/mealLogs";
 import { CreateMealLogSchema, UpdateMealLogSchema } from "../dto/mealLogs";
-import { MealLog } from "../types";
+import { MealLog, MealLogWithNutrition } from "../types";
+import { sumMealNutrition } from "./nutrition";
 
-async function getMealLogs(userId: number, logDate: string): Promise<MealLog[]> {
-  return mealLogsRepository.getMealLogs(userId, logDate);
+function withNutrition(mealLog: MealLog): MealLogWithNutrition {
+  return {
+    ...mealLog,
+    nutrition: sumMealNutrition(mealLog),
+  };
 }
 
-async function createMealLog(mealLog: CreateMealLogSchema): Promise<MealLog> {
-  return mealLogsRepository.createMealLog(mealLog);
+async function getMealLogs(
+  userId: number,
+  logDate: string,
+): Promise<MealLogWithNutrition[]> {
+  const mealLogs = await mealLogsRepository.getMealLogs(userId, logDate);
+  return mealLogs.map(withNutrition);
 }
 
-async function updateMealLog(mealLog: UpdateMealLogSchema): Promise<MealLog> {
-  return mealLogsRepository.updateMealLog(mealLog);
+async function createMealLog(
+  mealLog: CreateMealLogSchema,
+): Promise<MealLogWithNutrition> {
+  const newLog = await mealLogsRepository.createMealLog(mealLog);
+  return withNutrition(newLog);
+}
+
+async function updateMealLog(
+  mealLog: UpdateMealLogSchema,
+): Promise<MealLogWithNutrition> {
+  const updatedLog = await mealLogsRepository.updateMealLog(mealLog);
+  return withNutrition(updatedLog);
 }
 
 async function deleteMealLog(id: number) {

@@ -1,42 +1,7 @@
 import { mealsRepository } from "../dataaccess/meals";
 import { CreateMealSchema, UpdateMealSchema } from "../dto/meals";
-import { Nutrition, Meal, MealFood, MealWithNutrition } from "../types";
-import { sumNutrition } from "./nutrition";
-
-function sumMealNutrition(meal: Meal): Nutrition {
-  const nutritionFromRecipes = meal.recipeItems.reduce(
-    (acc, recipeItem) => {
-      const recipeNutrition = sumNutrition(recipeItem.recipe.ingredients);
-      acc.calories += recipeItem.servings * recipeNutrition.calories;
-      acc.macros.protein +=
-        recipeItem.servings * recipeNutrition.macros.protein;
-      acc.macros.carbs += recipeItem.servings * recipeNutrition.macros.carbs;
-      acc.macros.fat += recipeItem.servings * recipeNutrition.macros.fat;
-
-      return acc;
-    },
-    {
-      calories: 0,
-      macros: {
-        protein: 0,
-        carbs: 0,
-        fat: 0,
-      },
-    },
-  );
-  const nutritionFromFoods = sumNutrition(meal.foodItems);
-
-  return {
-    calories: nutritionFromRecipes.calories + nutritionFromFoods.calories,
-    macros: {
-      protein:
-        nutritionFromRecipes.macros.protein + nutritionFromFoods.macros.protein,
-      carbs:
-        nutritionFromRecipes.macros.carbs + nutritionFromFoods.macros.carbs,
-      fat: nutritionFromRecipes.macros.fat + nutritionFromFoods.macros.fat,
-    },
-  };
-}
+import { Nutrition, Meal, MealFood, MealWithNutrition, MealLog } from "../types";
+import { sumMealNutrition, sumNutrition } from "./nutrition";
 
 function withNutrition(meal: Meal): MealWithNutrition {
   return {
@@ -77,6 +42,7 @@ async function deleteMeal(mealId: number) {
 }
 
 export const mealsService = {
+  sumMealNutrition,
   getMeals,
   getUserMeals,
   getMeal,
