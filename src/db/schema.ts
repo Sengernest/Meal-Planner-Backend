@@ -202,9 +202,9 @@ export const mealPlansTable = pgTable("meal_plans", {
 export const mealsToMealPlansTable = pgTable(
   "meals_to_meal_plans",
   {
-    mealPlanId: integer("meal_plan_id").references(() => mealPlansTable.id),
-    mealId: integer("meal_id").references(() => mealsTable.id),
-    mealSlot: integer(), // e.g. Meal 1, Meal 2
+    mealPlanId: integer("meal_plan_id").references(() => mealPlansTable.id).notNull(),
+    mealId: integer("meal_id").references(() => mealsTable.id).notNull(),
+    mealSlot: integer().notNull(), // e.g. Meal 1, Meal 2
   },
   (table) => [primaryKey({ columns: [table.mealPlanId, table.mealSlot] })],
 );
