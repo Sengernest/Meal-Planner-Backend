@@ -18,17 +18,11 @@ export const usersTable = pgTable("users", {
   password: text().notNull(),
 });
 
-export const foodUnitsEnum = pgEnum("units", ["g", "ml"]);
-
 export const foodsTable = pgTable("foods", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: integer().primaryKey(),
   name: text().notNull(),
-
-  unit: foodUnitsEnum().notNull(), // g or ml
-  defaultServingSize: numeric("default_serving_size", { mode: "number" }), // amount in g or ml
-  defaultServingDescription: text(), // e.g. 1 cup, 1 piece
-
-  // Nutrition per 100g / 100ml
+  defaultServingSize: numeric("default_serving_size", { mode: "number" }), // in grams
+  // Nutrition per 100g
   calories: numeric({ mode: "number" }).notNull(),
   protein: numeric({ mode: "number" }).notNull(),
   fat: numeric({ mode: "number" }).notNull(),
