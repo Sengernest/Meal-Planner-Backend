@@ -1,14 +1,9 @@
-import { MacroGoalInput } from "../types";
+import { macroGoalsRepository } from "../dataaccess/macroGoals";
+import { MacroGoals } from "../types";
+import { MacroGoalsSchema } from "../dto/macroGoals";
 
-export function calculateCalories(input: MacroGoalInput) {
-  const {
-    age,
-    gender,
-    weight,
-    height,
-    activityLevel,
-    goal,
-  } = input;
+function calculateCalories(input: MacroGoalsSchema) {
+  const { age, gender, weight, height, activityLevel, goal } = input;
 
   // BMR (Mifflin-St Jeor)
   const bmr =
@@ -46,3 +41,50 @@ export function calculateCalories(input: MacroGoalInput) {
     fat: Math.round(fat),
   };
 }
+
+async function getMacroGoalsByUserId(
+  userId: number,
+): Promise<MacroGoals | null> {
+  return await macroGoalsRepository.getMacroGoalsByUserId(userId);
+}
+
+async function createMacroGoals(
+  userId: number,
+  input: MacroGoalsSchema,
+): Promise<MacroGoals> {
+  const macros = calculateCalories(input);
+
+  const macroGoals = await macroGoalsRepository.createMacroGoals(userId, {
+    ...input,
+    ...macros,
+  });
+
+  return macroGoals;
+}
+async function updateMacroGoals(
+  userId: number,
+  input: MacroGoalsSchema,
+): Promise<MacroGoals> {
+  const newMacros = calculateCalories(input);
+
+  const updatedMacroGoals = await macroGoalsRepository.updateMacroGoals(
+    userId,
+    {
+      ...input,
+      ...newMacros,
+    },
+  );
+
+  return updatedMacroGoals;
+}
+
+async function deleteMacroGoals(userId: number) {
+  return macroGoalsRepository.deleteMacroGoals(userId);
+}
+
+export const macroGoalsService = {
+  getMacroGoalsByUserId,
+  createMacroGoals,
+  updateMacroGoals,
+  deleteMacroGoals,
+};

@@ -212,13 +212,13 @@ export const foodsToMealLogsRelations = relations(
 
 export const macroGoalsTable = pgTable("macro_goals", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  creatorId: integer("creator_id").references(() => usersTable.id),
+  creatorId: integer("creator_id").references(() => usersTable.id).notNull().unique(),
   gender: text().notNull(),
   age: integer().notNull(),
   height: numeric({ mode: "number" }).notNull(),
   weight: numeric({ mode: "number" }).notNull(),
   activityLevel: text().notNull(), // sedentary, light, moderate, active, very_active
-  goal: text().notNull(), // cutting, maintain, bulking
+  goal: text().notNull(), // cutting, bulking, maintenance
   calories: integer().notNull(),
   carbs: integer().notNull(),
   protein: integer().notNull(),

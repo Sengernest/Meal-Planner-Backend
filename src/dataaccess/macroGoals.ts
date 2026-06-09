@@ -1,36 +1,48 @@
 import db from "../db/db";
 import { eq } from "drizzle-orm";
 import { macroGoalsTable } from "../db/schema";
-import { MacroGoals, MacroGoalInput } from "../types";
-import { calculateCalories } from "../services/macroGoals";
+import { MacroGoals, MacroGoalsInputWithMacros } from "../types";
 
-export async function getMacroGoalsByUserId(userId: number): Promise<MacroGoals[]> {
-    return await db.query.macroGoalsTable.findMany({
-        where: eq(macroGoalsTable.creatorId, userId)
-    });
+async function getMacroGoalsByUserId(userId: number): Promise<MacroGoals | null> {
+    const macroGoals = await db.query.macroGoalsTable.findFirst({
+        where: eq(macroGoalsTable.creatorId, userId),
+    })
+    return macroGoals ?? null;
 }
 
-export async function createMacroGoals(userId: number, input: MacroGoalInput) {
-  const macros = calculateCalories(input);
+async function createMacroGoals(userId: number, macros: MacroGoalsInputWithMacros): Promise<MacroGoals> {
+    const [macroGoals] = await db.transaction(async (tx) => {
+        return await tx
+            .insert(macroGoalsTable)
+            .values({
+                creatorId: userId,
+                ...macros
+            })
+            .returning();
+    });
 
-  const [macroGoal] = await db.transaction(async (tx) => {
-    return await tx
-      .insert(macroGoalsTable)
-      .values({
-        creatorId: userId,
-        age: input.age,
-        gender: input.gender,
-        weight: input.weight,
-        height: input.height,
-        activityLevel: input.activityLevel,
-        goal: input.goal,
-        calories: macros.calories,
-        protein: macros.protein,
-        carbs: macros.carbs,
-        fat: macros.fat,
-      })
-      .returning();
-  });
+    return macroGoals;
+}
 
-  return macroGoal;
+async function updateMacroGoals(userId: number, macros: MacroGoalsInputWithMacros): Promise<MacroGoals> {
+    const [macroGoals] = await db
+        .update(macroGoalsTable)
+        .set({
+            ...macros,
+        })
+        .where(eq(macroGoalsTable.creatorId, userId))
+        .returning();
+
+    return macroGoals;
+}
+
+async function deleteMacroGoals(userId: number) {
+    return await db.delete(macroGoalsTable).where(eq(macroGoalsTable.creatorId, userId));
+}
+
+export const macroGoalsRepository = {
+    getMacroGoalsByUserId,
+    createMacroGoals,
+    updateMacroGoals,
+    deleteMacroGoals
 }
