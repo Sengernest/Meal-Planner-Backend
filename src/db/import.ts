@@ -12,24 +12,24 @@ async function main() {
     const batch = baseFoods.slice(i, i + batchSize);
 
     const values = batch.map((food: any) => {
-      const nutrients = food["foodNutrients"];
+      const nutrients = food["foodNutrients"] ?? [];
       const calories = nutrients.find(
         (nutrient: any) => nutrient.nutrient.id == 2047,
-      ).amount;
+      )?.amount ?? 0;
       const carbs = nutrients.find(
         (nutrient: any) => nutrient.nutrient.name == 1003,
-      ).amount;
+      )?.amount ?? 0;
       const fat = nutrients.find(
         (nutrient: any) => nutrient.nutrient.name == 1004,
-      ).amount;
+      )?.amount ?? 0;
       const protein = nutrients.find(
         (nutrient: any) => nutrient.nutrient.name == 1005,
-      ).amount;
+      )?.amount ?? 0;
 
       return {
         id: food["fdcId"],
         name: food["description"],
-        defaultServingSize: food["foodPortions"][0]["gramWeight"],
+        defaultServingSize: food["foodPortions"]?.[0]?.["gramWeight"] ?? 0,
         calories,
         carbs,
         fat,
