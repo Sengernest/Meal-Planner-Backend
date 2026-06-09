@@ -10,6 +10,7 @@ import {
   recipesToMealLogsTable,
   mealLogsTable,
   foodsToMealLogsTable,
+  mealPlansTable,
 } from "./db/schema";
 
 export type User = typeof usersTable.$inferSelect;
@@ -51,6 +52,10 @@ export type Meal = typeof mealsTable.$inferSelect & {
   recipeItems: MealRecipe[];
   foodItems: MealFood[];
 };
+
+export type MealPlan = typeof mealPlansTable.$inferSelect & {
+  meals: Meal[]
+}
 
 // Food with amount, corresponding to the recipe or meal in which it is contained
 export type FoodItem = RecipeFood | MealFood | MealLogFood

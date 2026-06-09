@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import { date } from "drizzle-orm/pg-core";
+import { unique } from "drizzle-orm/pg-core";
 import { pgEnum } from "drizzle-orm/pg-core";
 import { timestamp } from "drizzle-orm/pg-core";
 import {
@@ -71,17 +72,21 @@ export const foodsToRecipesRelations = relations(
 
 export const mealPlansTable = pgTable("meal_plans", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  creatorId: integer("creator_id").references(() => usersTable.id),
+  creatorId: integer("creator_id").references(() => usersTable.id), // Null if sample meal
   name: text().notNull(), // e.g. Bulking plan
 });
 
-export const mealsTable = pgTable("meals", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  mealPlanId: integer("meal_plan_id")
-    .references(() => mealPlansTable.id)
-    .notNull(),
-  mealPlanIndex: integer().notNull(),
-});
+export const mealsTable = pgTable(
+  "meals",
+  {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    mealPlanId: integer("meal_plan_id")
+      .references(() => mealPlansTable.id, { onDelete: "cascade" })
+      .notNull(),
+    mealPlanIndex: integer().notNull(),
+  },
+  (table) => [unique().on(table.mealPlanId, table.mealPlanIndex)],
+);
 
 // Number of servings of a recipe in a specific meal
 export const recipesToMealsTable = pgTable(
@@ -91,7 +96,7 @@ export const recipesToMealsTable = pgTable(
       .references(() => recipesTable.id)
       .notNull(),
     mealId: integer("meal_id")
-      .references(() => mealsTable.id)
+      .references(() => mealsTable.id, { onDelete: "cascade" })
       .notNull(),
     servings: integer().notNull(),
   },
@@ -106,12 +111,16 @@ export const foodsToMealsTable = pgTable(
       .references(() => foodsTable.id)
       .notNull(),
     mealId: integer("meal_id")
-      .references(() => mealsTable.id)
+      .references(() => mealsTable.id, { onDelete: "cascade" })
       .notNull(),
     amount: numeric({ mode: "number" }).notNull(),
   },
   (table) => [primaryKey({ columns: [table.foodId, table.mealId] })],
 );
+
+export const mealPlansRelations = relations(mealPlansTable, ({ many }) => ({
+  meals: many(mealsTable),
+}));
 
 export const mealsRelations = relations(mealsTable, ({ many }) => ({
   recipeItems: many(recipesToMealsTable),
