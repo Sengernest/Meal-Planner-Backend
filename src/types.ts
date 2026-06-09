@@ -76,18 +76,17 @@ export type MealLogWithNutrition = MealLog & {
   nutrition: Nutrition
 }
 
-export type MacroGoals = typeof macroGoalsTable.$inferSelect & {
-  calories: number;
-  carbs: number;
-  protein: number;
-  fat: number;
-};
+export type MacroGoals = typeof macroGoalsTable.$inferSelect
 
-export type MacroGoalInput = {
+export type MacroGoalsInputWithMacros = {
   age: number;
   gender: "male" | "female";
   weight: number;
   height: number;
   activityLevel: "sedentary" | "light" | "moderate" | "active" | "very_active";
-  goal: "cutting" | "maintain" | "bulking";
-};
+  goal: "cutting" | "bulking" | "maintenance";
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number
+}

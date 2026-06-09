@@ -2,24 +2,37 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
 export async function requireAuth(req: Request, res: Response, next: NextFunction) {
+    const token = req.cookies.jwt;
 
-  const token = req.cookies.jwt;
-
-  if (!token) {
-    res.status(401).json({ error: "Unauthorized" });
-    res.redirect("/login");
-  }
-  
-  jwt.verify(token, process.env.JWT_SECRET!, (err: any, decodedToken: any) => {
-    if (err) {
-      res.status(401).json({ error: "Invalid token" });
-      res.redirect("/login");
+    if (!token) {
+        res.status(401).json({ error: "Unauthorized" });
     }
 
-    console.log("Decoded JWT:", decodedToken);
+    jwt.verify(token, process.env.JWT_SECRET!, (err: any, decodedToken: any) => {
+        if (err) {
+            res.status(401).json({ error: "Invalid token" });
+        }
+        
+        (req as any).user = { userId: decodedToken.userId };
+        const paramId = Number(req.params.id);
+        if (paramId !== decodedToken.userId) {
+            return res.status(403).json({
+                error: "Forbidden",
+            });
+        }
+        next();
+    });
+};
 
-    (req as any).user = { userId: decodedToken.userId };
+export function requireUserMatch(req: Request, res: Response, next: NextFunction) {
+    const paramId = Number(req.params.id);
+    const userId = (req as any).user.userId;
+
+    if (paramId !== userId) {
+        return res.status(403).json({
+            error: "Forbidden",
+        });
+    }
 
     next();
-  });
 }

@@ -19,13 +19,15 @@ import { handleSignup, handleLogin, handleLogout } from "./handlers/auth";
 import {
   handleCreateMacroGoals,
   handleGetMacroGoals,
+  handleUpdateMacroGoals,
+  handleDeleteMacroGoals
 } from "./handlers/macroGoals";
-import { requireAuth } from "./middleware/auth";
+import { requireAuth, requireUserMatch } from "./middleware/auth";
 import { bodyValidator, idValidator } from "./middleware/validation";
 import { signupSchema, loginSchema } from "./dto/auth";
 import { createRecipeSchema, updateRecipeSchema } from "./dto/recipes";
 import { createMealSchema, updateMealSchema } from "./dto/meals";
-import { calculateMacroGoalsSchema } from "./dto/macroGoals";
+import { MacroGoalsSchema } from "./dto/macroGoals";
 import {
   handleCreateMealLog,
   handleDeleteMealLog,
@@ -44,6 +46,7 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Hello world!");
 });
 
+// Auth
 app.post("/signup", bodyValidator(signupSchema), handleSignup);
 app.post("/login", bodyValidator(loginSchema), handleLogin);
 app.post("/logout", handleLogout);
@@ -81,12 +84,9 @@ app.put("/meal-logs/:id", idValidator(), bodyValidator(updateMealLogSchema), han
 app.delete("/meal-logs/:id", idValidator(), handleDeleteMealLog);
 
 // Macro goals
-app.post(
-  "/macro-goals",
-  requireAuth,
-  bodyValidator(calculateMacroGoalsSchema),
-  handleCreateMacroGoals,
-);
-app.get("/macro-goals", requireAuth, handleGetMacroGoals);
+app.post("/users/:id/macro-goals", idValidator(), requireAuth, requireUserMatch, bodyValidator(MacroGoalsSchema), handleCreateMacroGoals);
+app.get("/users/:id/macro-goals", idValidator(), requireAuth, requireUserMatch, handleGetMacroGoals);
+app.put("/users/:id/macro-goals", idValidator(), requireAuth, requireUserMatch, bodyValidator(MacroGoalsSchema), handleUpdateMacroGoals);
+app.delete("/users/:id/macro-goals", idValidator(), requireAuth, requireUserMatch, handleDeleteMacroGoals);
 
 export default app;
