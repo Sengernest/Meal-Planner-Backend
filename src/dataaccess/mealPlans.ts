@@ -200,6 +200,9 @@ async function deleteMealPlan(mealPlanId: number) {
 }
 
 export const mealPlansRepository = {
+  getSampleMealPlans,
+  getUserMealPlans,
+  getMealPlan,
   createMealPlan,
   updateMealPlan,
   deleteMealPlan,

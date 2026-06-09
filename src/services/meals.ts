@@ -16,7 +16,7 @@ async function getMeal(mealId: number): Promise<MealWithNutrition> {
   return withNutrition(meal);
 }
 
-export const mealsService = {
+export const mealService = {
   sumMealNutrition,
   getMeal,
 };
