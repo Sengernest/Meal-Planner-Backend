@@ -19,6 +19,11 @@ export type UserInput = typeof usersTable.$inferInsert;
 export type Food = typeof foodsTable.$inferSelect;
 export type FoodInput = typeof foodsTable.$inferInsert;
 
+export type FoodSearchResult = {
+  food: Food
+  score: number // Similarity score
+}
+
 export type RecipeFood = typeof foodsToRecipesTable.$inferSelect & {
   food: Food;
 };
