@@ -20,10 +20,11 @@ docker compose up -d
 npx drizzle-kit push
 ```    
 5. Import food data from json file
+> Prerequisite: Downloaded food data file at data/foundation_food.json
 ```
 npm run import
 ```
-6. Run the dev server
+1. Run the dev server
 ```
 npm run dev
 ```
