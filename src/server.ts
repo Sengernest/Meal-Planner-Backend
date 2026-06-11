@@ -80,7 +80,7 @@ app.post(
   handleCreateMealPlan,
 );
 app.put(
-  "/meals/:id",
+  "/meal-plans/:id",
   idValidator(),
   bodyValidator(updateMealPlanSchema),
   handleUpdateMealPlan,

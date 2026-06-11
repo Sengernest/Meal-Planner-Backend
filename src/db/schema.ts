@@ -61,6 +61,10 @@ export const foodsToRecipesRelations = relations(
       fields: [foodsToRecipesTable.foodId],
       references: [foodsTable.id],
     }),
+    recipe: one(recipesTable, {
+      fields: [foodsToRecipesTable.recipeId],
+      references: [recipesTable.id],
+    }),
   }),
 );
 
@@ -116,7 +120,11 @@ export const mealPlansRelations = relations(mealPlansTable, ({ many }) => ({
   meals: many(mealsTable),
 }));
 
-export const mealsRelations = relations(mealsTable, ({ many }) => ({
+export const mealsRelations = relations(mealsTable, ({ many, one }) => ({
+  mealPlan: one(mealPlansTable, {
+    fields: [mealsTable.mealPlanId],
+    references: [mealPlansTable.id],
+  }),
   recipeItems: many(recipesToMealsTable),
   foodItems: many(foodsToMealsTable),
 }));
@@ -128,6 +136,10 @@ export const recipesToMealsRelations = relations(
       fields: [recipesToMealsTable.recipeId],
       references: [recipesTable.id],
     }),
+    meal: one(mealsTable, {
+      fields: [recipesToMealsTable.mealId],
+      references: [mealsTable.id],
+    }),
   }),
 );
 
@@ -137,6 +149,10 @@ export const foodsToMealsRelations = relations(
     food: one(foodsTable, {
       fields: [foodsToMealsTable.foodId],
       references: [foodsTable.id],
+    }),
+    meal: one(mealsTable, {
+      fields: [foodsToMealsTable.mealId],
+      references: [mealsTable.id],
     }),
   }),
 );
@@ -191,6 +207,10 @@ export const recipesToMealLogsRelations = relations(
       fields: [recipesToMealLogsTable.recipeId],
       references: [recipesTable.id],
     }),
+    mealLog: one(mealLogsTable, {
+      fields: [recipesToMealLogsTable.mealLogId],
+      references: [mealLogsTable.id],
+    }),
   }),
 );
 
@@ -201,12 +221,19 @@ export const foodsToMealLogsRelations = relations(
       fields: [foodsToMealLogsTable.foodId],
       references: [foodsTable.id],
     }),
+    mealLog: one(mealLogsTable, {
+      fields: [foodsToMealLogsTable.mealLogId],
+      references: [mealLogsTable.id],
+    }),
   }),
 );
 
 export const macroGoalsTable = pgTable("macro_goals", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  creatorId: integer("creator_id").references(() => usersTable.id).notNull().unique(),
+  creatorId: integer("creator_id")
+    .references(() => usersTable.id)
+    .notNull()
+    .unique(),
   gender: text().notNull(),
   age: integer().notNull(),
   height: numeric({ mode: "number" }).notNull(),
