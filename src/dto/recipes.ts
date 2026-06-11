@@ -2,7 +2,6 @@ import z from "zod";
 
 export const createRecipeSchema = z.object({
   name: z.string(),
-  creatorId: z.int().positive(),
   ingredients: z.array(
     z.object({
       foodId: z.int().positive(),
@@ -17,3 +16,9 @@ export const updateRecipeSchema = createRecipeSchema.extend({
 
 export type CreateRecipeSchema = z.infer<typeof createRecipeSchema>;
 export type UpdateRecipeSchema = z.infer<typeof updateRecipeSchema>;
+
+export type CreateRecipe = CreateRecipeSchema & {
+  creatorId: number
+}
+
+export type UpdateRecipe = UpdateRecipeSchema

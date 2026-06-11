@@ -1,5 +1,6 @@
 import { recipesRepository } from "../dataaccess/recipes";
-import { CreateRecipeSchema, UpdateRecipeSchema } from "../dto/recipes";
+import { CreateRecipe, CreateRecipeSchema, UpdateRecipe, UpdateRecipeSchema } from "../dto/recipes";
+import { NotFoundError, UnauthorizedError } from "../errors/errors";
 import {
   FoodItem,
   Nutrition,
@@ -34,20 +35,34 @@ async function getRecipe(recipeId: number): Promise<RecipeWithNutrition> {
 }
 
 async function createRecipe(
-  recipe: CreateRecipeSchema,
+  recipe: CreateRecipe,
 ): Promise<RecipeWithNutrition> {
   const newRecipe = await recipesRepository.createRecipe(recipe);
   return withNutrition(newRecipe);
 }
 
 async function updateRecipe(
-  recipe: UpdateRecipeSchema,
+  recipeUpdateData: UpdateRecipe, userId: number | undefined
 ): Promise<RecipeWithNutrition> {
-  const updatedRecipe = await recipesRepository.updateRecipe(recipe);
+  const recipe = await recipesRepository.getRecipe(recipeUpdateData.recipeId)
+  if (!recipe) {
+    throw new NotFoundError()
+  }
+  if (recipe.creatorId !== userId) {
+    throw new UnauthorizedError()
+  }
+  const updatedRecipe = await recipesRepository.updateRecipe(recipeUpdateData);
   return withNutrition(updatedRecipe);
 }
 
-async function deleteRecipe(recipeId: number) {
+async function deleteRecipe(recipeId: number, userId: number | undefined) {
+  const recipe = await recipesRepository.getRecipe(recipeId);
+  if (!recipe) {
+    throw new NotFoundError()
+  }
+  if (recipe.creatorId !== userId) {
+    throw new UnauthorizedError()
+  }
   return recipesRepository.deleteRecipe(recipeId);
 }
 

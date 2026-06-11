@@ -19,17 +19,23 @@ export async function handleGetRecipe(req: Request, res: Response) {
 }
 
 export async function handleCreateRecipe(req: Request, res: Response) {
-  const recipe = await recipesService.createRecipe(req.body);
+  const creatorId = req.user?.id;
+  const recipe = await recipesService.createRecipe({
+    ...req.body,
+    creatorId,
+  });
   res.json(recipe);
 }
 
 export async function handleUpdateRecipe(req: Request, res: Response) {
-  const updatedRecipe = await recipesService.updateRecipe(req.body);
+  const userId = req.user?.id
+  const updatedRecipe = await recipesService.updateRecipe(req.body, userId);
   res.json(updatedRecipe);
 }
 
 export async function handleDeleteRecipe(req: Request, res: Response) {
   const recipeId = Number(req.params.id);
-  await recipesService.deleteRecipe(recipeId);
+  const userId = req.user?.id;
+  await recipesService.deleteRecipe(recipeId, userId);
   res.json({ message: `Deleted recipe: ${recipeId}` });
 }

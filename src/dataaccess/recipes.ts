@@ -2,7 +2,12 @@ import { eq } from "drizzle-orm";
 import db from "../db/db";
 import { foodsToRecipesTable, recipesTable } from "../db/schema";
 import { Recipe } from "../types";
-import { CreateRecipeSchema, UpdateRecipeSchema } from "../dto/recipes";
+import {
+  CreateRecipe,
+  CreateRecipeSchema,
+  UpdateRecipe,
+  UpdateRecipeSchema,
+} from "../dto/recipes";
 
 async function getRecipes(): Promise<Recipe[]> {
   return await db.query.recipesTable.findMany({
@@ -47,7 +52,7 @@ async function getRecipe(recipeId: number): Promise<Recipe> {
   return recipe;
 }
 
-async function createRecipe(recipe: CreateRecipeSchema): Promise<Recipe> {
+async function createRecipe(recipe: CreateRecipe): Promise<Recipe> {
   return await db.transaction(async (tx) => {
     const [newRecipe] = await tx
       .insert(recipesTable)
@@ -69,14 +74,11 @@ async function createRecipe(recipe: CreateRecipeSchema): Promise<Recipe> {
   });
 }
 
-async function updateRecipe(recipe: UpdateRecipeSchema): Promise<Recipe> {
+async function updateRecipe(recipe: UpdateRecipe): Promise<Recipe> {
   return await db.transaction(async (tx) => {
     await tx
       .update(recipesTable)
-      .set({
-        name: recipe.name,
-        creatorId: recipe.creatorId,
-      })
+      .set({ name: recipe.name })
       .where(eq(recipesTable.id, recipe.recipeId));
 
     // Delete all existing ingredients
