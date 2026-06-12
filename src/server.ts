@@ -1,7 +1,7 @@
 import express, { json, Request, Response } from "express";
 import { loginSchema, signupSchema } from "./dto/auth";
 import { macroGoalsSchema } from "./dto/macroGoals";
-import { mealPlanSchema, updateMealPlanSchema } from "./dto/mealPlans";
+import { mealPlanSchema } from "./dto/mealPlans";
 import { recipeSchema } from "./dto/recipes";
 import { handleLogin, handleLogout, handleSignup } from "./handlers/auth";
 import {
@@ -79,7 +79,7 @@ app.post("/meal-plans", bodyValidator(mealPlanSchema), handleCreateMealPlan);
 app.put(
   "/meal-plans/:id",
   idValidator(),
-  bodyValidator(updateMealPlanSchema),
+  bodyValidator(mealPlanSchema),
   handleUpdateMealPlan,
 );
 app.delete("/meal-plans/:id", idValidator(), handleDeleteMealPlan);
