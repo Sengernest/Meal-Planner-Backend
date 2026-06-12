@@ -13,7 +13,7 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
             res.status(401).json({ error: "Invalid token" });
         }
         
-        (req as any).user = { userId: decodedToken.userId };
+        (req as any).user = { id: decodedToken.userId };
         const paramId = Number(req.params.id);
         if (paramId !== decodedToken.userId) {
             return res.status(403).json({

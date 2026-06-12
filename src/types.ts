@@ -14,6 +14,9 @@ import {
 } from "./db/schema";
 
 export type User = typeof usersTable.$inferSelect;
+export type AuthUser = {
+  id: number
+}
 export type UserInput = typeof usersTable.$inferInsert;
 
 export type Food = typeof foodsTable.$inferSelect;
