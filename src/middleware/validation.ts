@@ -27,9 +27,11 @@ export function paramsValidator(schema: ZodObject) {
 
 // Validates the id field in request params
 export function idValidator(idKey = "id") {
-  return paramsValidator(z.object({
-    [idKey]: z.coerce.number().int().positive()
-  }))
+  return paramsValidator(
+    z.object({
+      [idKey]: z.coerce.number().int().positive(),
+    }),
+  );
 }
 
 // Validates request query
