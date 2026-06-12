@@ -13,18 +13,20 @@ async function main() {
 
     const values = batch.map((food: any) => {
       const nutrients = food["foodNutrients"] ?? [];
-      const calories = nutrients.find(
-        (nutrient: any) => nutrient.nutrient.id == 2047,
-      )?.amount ?? 0;
-      const protein = nutrients.find(
-        (nutrient: any) => nutrient.nutrient.id == 1003,
-      )?.amount ?? 0;
-      const fat = nutrients.find(
-        (nutrient: any) => nutrient.nutrient.id == 1004,
-      )?.amount ?? 0;
-      const carbs = nutrients.find(
-        (nutrient: any) => nutrient.nutrient.id == 1005,
-      )?.amount ?? 0;
+      const calories =
+        nutrients.find((nutrient: any) => nutrient.nutrient.id == 2047)
+          ?.amount ?? 0;
+      const protein =
+        nutrients.find((nutrient: any) => nutrient.nutrient.id == 1003)
+          ?.amount ?? 0;
+      const fat =
+        nutrients.find((nutrient: any) => nutrient.nutrient.id == 1004)
+          ?.amount ?? 0;
+      const carbs = Math.max(
+        nutrients.find((nutrient: any) => nutrient.nutrient.id == 1005)
+          ?.amount ?? 0,
+        0,
+      );
 
       return {
         id: food["fdcId"],
