@@ -13,7 +13,7 @@ function withNutrition(mealLog: MealLog): MealLogWithNutrition {
 
 async function getMealLogs(
   userId: number,
-  logDate: string,
+  logDate: Date,
 ): Promise<MealLogWithNutrition[]> {
   const mealLogs = await mealLogsRepository.getMealLogs(userId, logDate);
   return mealLogs.map(withNutrition);

@@ -43,7 +43,7 @@ export const foodsToRecipesTable = pgTable(
       .references(() => foodsTable.id)
       .notNull(),
     recipeId: integer("recipe_id")
-      .references(() => recipesTable.id, {onDelete: "cascade"})
+      .references(() => recipesTable.id, { onDelete: "cascade" })
       .notNull(),
     amount: numeric({ mode: "number" }).notNull(),
   },
@@ -163,8 +163,8 @@ export const mealLogsTable = pgTable("meal_logs", {
   userId: integer("user_id")
     .references(() => usersTable.id)
     .notNull(),
-  logDate: date({ mode: "string" }),
-  mealIndex: integer().notNull(), // e.g. Meal 1, Meal 2
+  logDate: timestamp("log_date", { withTimezone: true }).notNull(),
+  mealIndex: integer("meal_index").notNull(), // e.g. Meal 1, Meal 2
 });
 
 export const recipesToMealLogsTable = pgTable(

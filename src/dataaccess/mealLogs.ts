@@ -9,10 +9,7 @@ import { MealLogSchema } from "../dto/mealLogs";
 import { MealLog } from "../types";
 
 // Get meal logs by a user on a given date
-async function getMealLogs(
-  userId: number,
-  logDate: string,
-): Promise<MealLog[]> {
+async function getMealLogs(userId: number, logDate: Date): Promise<MealLog[]> {
   return await db.query.mealLogsTable.findMany({
     where: and(
       eq(mealLogsTable.userId, userId),
@@ -67,8 +64,11 @@ async function getMealLog(mealLogId: number): Promise<MealLog | undefined> {
   });
 }
 
-async function createMealLog(mealLog: MealLogSchema, userId: number): Promise<MealLog | undefined> {
-  return await db.transaction(async (tx) => {
+async function createMealLog(
+  mealLog: MealLogSchema,
+  userId: number,
+): Promise<MealLog | undefined> {
+  const newMealLog = await db.transaction(async (tx) => {
     const [newMealLog] = await tx
       .insert(mealLogsTable)
       .values({
@@ -94,12 +94,16 @@ async function createMealLog(mealLog: MealLogSchema, userId: number): Promise<Me
         })),
       );
     }
-    return getMealLog(newMealLog.id);
+    return newMealLog;
   });
+  return getMealLog(newMealLog.id);
 }
 
-async function updateMealLog(mealLogId: number, mealLog: MealLogSchema): Promise<MealLog | undefined> {
-  return await db.transaction(async (tx) => {
+async function updateMealLog(
+  mealLogId: number,
+  mealLog: MealLogSchema,
+): Promise<MealLog | undefined> {
+  await db.transaction(async (tx) => {
     await tx
       .update(mealLogsTable)
       .set({
@@ -134,9 +138,8 @@ async function updateMealLog(mealLogId: number, mealLog: MealLogSchema): Promise
         })),
       );
     }
-
-    return getMealLog(mealLogId);
   });
+  return getMealLog(mealLogId);
 }
 
 async function deleteMealLog(mealLogId: number) {
