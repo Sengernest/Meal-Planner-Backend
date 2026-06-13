@@ -15,8 +15,8 @@ import {
 
 export type User = typeof usersTable.$inferSelect;
 export type AuthUser = {
-  id: number
-}
+  id: number;
+};
 export type UserInput = typeof usersTable.$inferInsert;
 
 export type Food = typeof foodsTable.$inferSelect;
@@ -62,19 +62,20 @@ export type Meal = typeof mealsTable.$inferSelect & {
 };
 
 export type MealWithNutrition = Meal & {
-  nutrition: Nutrition
-}
+  nutrition: Nutrition;
+};
 
 export type MealPlan = typeof mealPlansTable.$inferSelect & {
-  meals: Meal[]
-}
+  meals: Meal[];
+};
 
-export type MealPlanWithNutrition = MealPlan & {
-  nutrition: Nutrition
-}
+export type MealPlanWithNutrition = typeof mealPlansTable.$inferSelect & {
+  meals: MealWithNutrition[];
+  nutrition: Nutrition;
+};
 
 // Food with amount, corresponding to the recipe or meal in which it is contained
-export type FoodItem = RecipeFood | MealFood | MealLogFood
+export type FoodItem = RecipeFood | MealFood | MealLogFood;
 
 export type MealLogRecipe = typeof recipesToMealLogsTable.$inferSelect & {
   recipe: Recipe;
@@ -90,10 +91,10 @@ export type MealLog = typeof mealLogsTable.$inferSelect & {
 };
 
 export type MealLogWithNutrition = MealLog & {
-  nutrition: Nutrition
-}
+  nutrition: Nutrition;
+};
 
-export type MacroGoals = typeof macroGoalsTable.$inferSelect
+export type MacroGoals = typeof macroGoalsTable.$inferSelect;
 
 export type MacroGoalsInputWithMacros = {
   age: number;
@@ -105,5 +106,5 @@ export type MacroGoalsInputWithMacros = {
   calories: number;
   protein: number;
   carbs: number;
-  fat: number
-}
+  fat: number;
+};
