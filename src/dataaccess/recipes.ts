@@ -47,29 +47,27 @@ async function createRecipe(
   recipe: RecipeSchema,
   creatorId: number | undefined,
 ): Promise<Recipe | undefined> {
-  return await db.transaction(async (tx) => {
+  const newRecipe = await db.transaction(async (tx) => {
     const [newRecipe] = await tx
       .insert(recipesTable)
       .values({ name: recipe.name, creatorId })
       .returning();
-    await tx
-      .insert(foodsToRecipesTable)
-      .values(
-        recipe.ingredients.map((ingredient) => ({
-          ...ingredient,
-          recipeId: newRecipe.id,
-        })),
-      )
-      .returning();
-    return getRecipe(newRecipe.id);
+    await tx.insert(foodsToRecipesTable).values(
+      recipe.ingredients.map((ingredient) => ({
+        ...ingredient,
+        recipeId: newRecipe.id,
+      })),
+    );
+    return newRecipe;
   });
+  return getRecipe(newRecipe.id);
 }
 
 async function updateRecipe(
   recipeId: number,
   recipe: RecipeSchema,
 ): Promise<Recipe | undefined> {
-  return await db.transaction(async (tx) => {
+  await db.transaction(async (tx) => {
     await tx
       .update(recipesTable)
       .set({ name: recipe.name })
@@ -86,9 +84,8 @@ async function updateRecipe(
         recipeId: recipeId,
       })),
     );
-
-    return getRecipe(recipeId);
   });
+  return getRecipe(recipeId);
 }
 
 async function deleteRecipe(recipeId: number) {
