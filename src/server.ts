@@ -61,7 +61,7 @@ app.get("/foods/search", handleSearchFoods);
 // Recipes
 app.get("/recipes", handleGetRecipes);
 app.get("/me/recipes", requireAuth, handleGetUserRecipes);
-app.get("/recipes/:id", idValidator(), handleGetRecipe);
+app.get("/recipes/:id", requireAuth, idValidator(), handleGetRecipe);
 app.post(
   "/recipes",
   requireAuth,
