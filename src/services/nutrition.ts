@@ -1,8 +1,23 @@
 import { FoodItem, Meal, MealLog, Nutrition } from "../types";
 
+function roundValue(value: number) {
+  return Math.round(value * 10) / 10
+}
+
+function roundNutrition(nutrition: Nutrition): Nutrition {
+  return {
+    calories: roundValue(nutrition.calories),
+    macros: {
+      protein: roundValue(nutrition.macros.protein),
+      fat: roundValue(nutrition.macros.carbs),
+      carbs: roundValue(nutrition.macros.fat) 
+    }
+  }
+}
+
 // Sums up the nutrition content in a list of foods, such as in a recipe or meal log
 export function sumNutrition(foodItems: FoodItem[]): Nutrition {
-  return foodItems.reduce(
+  const nutrition = foodItems.reduce(
     (acc, foodItem) => {
       const factor = foodItem.amount / 100;
 
@@ -22,10 +37,11 @@ export function sumNutrition(foodItems: FoodItem[]): Nutrition {
       },
     },
   );
+  return roundNutrition(nutrition)
 }
 
 export function sumMealNutrition(meal: Meal | MealLog): Nutrition {
-  const nutritionFromRecipes = meal.recipeItems.reduce(
+  const nutritionFromRecipes = roundNutrition(meal.recipeItems.reduce(
     (acc, recipeItem) => {
       const recipeNutrition = sumNutrition(recipeItem.recipe.ingredients);
       acc.calories += recipeItem.servings * recipeNutrition.calories;
@@ -44,7 +60,7 @@ export function sumMealNutrition(meal: Meal | MealLog): Nutrition {
         fat: 0,
       },
     },
-  );
+  ));
   const nutritionFromFoods = sumNutrition(meal.foodItems);
 
   return {
