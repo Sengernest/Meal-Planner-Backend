@@ -62,7 +62,7 @@ app.get("/", (req: Request, res: Response) => {
 app.post("/signup", bodyValidator(signupSchema), handleSignup);
 app.post("/login", bodyValidator(loginSchema), handleLogin);
 app.post("/logout", handleLogout);
-app.get("/me", handleGetCurrentUser)
+app.get("/me", requireAuth, handleGetCurrentUser)
 
 // Foods
 app.get("/foods", handleGetFoods);

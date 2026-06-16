@@ -5,7 +5,7 @@ export async function handleSignup(req: Request, res: Response) {
   const { user, token } = await authService.handleSignup(req.body);
   res.cookie("jwt", token, { httpOnly: true, maxAge: 72 * 60 * 60 * 1000 });
   res.json(user);
-};
+}
 
 export async function handleLogin(req: Request, res: Response) {
   try {
@@ -15,7 +15,7 @@ export async function handleLogin(req: Request, res: Response) {
   } catch (error) {
     res.status(401).json({ error: "Invalid credentials" });
   }
-};
+}
 
 export async function handleLogout(req: Request, res: Response) {
   res.clearCookie("jwt");
@@ -23,5 +23,6 @@ export async function handleLogout(req: Request, res: Response) {
 }
 
 export async function handleGetCurrentUser(req: Request, res: Response) {
-  const user = await authService.getUserById(req.user!.id)
+  const user = await authService.getUserById(req.user!.id);
+  res.json(user);
 }
