@@ -22,3 +22,6 @@ export async function handleLogout(req: Request, res: Response) {
   res.json({ message: "Logged out successfully" });
 }
 
+export async function handleGetCurrentUser(req: Request, res: Response) {
+  const user = await authService.getUserById(req.user!.id)
+}
