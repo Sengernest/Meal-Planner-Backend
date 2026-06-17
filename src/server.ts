@@ -3,7 +3,9 @@ import { loginSchema, signupSchema } from "./dto/auth";
 import { macroGoalsSchema } from "./dto/macroGoals";
 import { mealPlanSchema } from "./dto/mealPlans";
 import { recipeSchema } from "./dto/recipes";
+import { profileSchema } from "./dto/profile";
 import { handleGetCurrentUser, handleLogin, handleLogout, handleSignup } from "./handlers/auth";
+import { handleUpdateProfile } from "./handlers/users";
 import {
   handleCreateMacroGoals,
   handleDeleteMacroGoals,
@@ -63,6 +65,9 @@ app.post("/signup", bodyValidator(signupSchema), handleSignup);
 app.post("/login", bodyValidator(loginSchema), handleLogin);
 app.post("/logout", handleLogout);
 app.get("/me", requireAuth, handleGetCurrentUser)
+
+// Profile
+app.put("/me/profile", requireAuth, bodyValidator(profileSchema), handleUpdateProfile);
 
 // Foods
 app.get("/foods", handleGetFoods);

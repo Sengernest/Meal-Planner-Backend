@@ -19,6 +19,11 @@ export type AuthUser = {
 };
 export type UserInput = typeof usersTable.$inferInsert;
 
+export type Profile = {
+  name: string;
+  email: string
+}
+
 export type Food = typeof foodsTable.$inferSelect;
 export type FoodInput = typeof foodsTable.$inferInsert;
 
