@@ -66,12 +66,12 @@ async function getRecipe(recipeId: number): Promise<Recipe | undefined> {
 
 async function createRecipe(
   recipe: RecipeSchema,
-  creatorId: number,
+  creatorId?: number,
 ): Promise<Recipe | undefined> {
   const newRecipe = await db.transaction(async (tx) => {
     const [newRecipe] = await tx
       .insert(recipesTable)
-      .values({ ...recipe, name: recipe.name, creatorId, isSample: false })
+      .values({ ...recipe, name: recipe.name, creatorId, isSample: !creatorId })
       .returning();
     await tx.insert(foodsToRecipesTable).values(
       recipe.ingredients.map((ingredient) => ({
