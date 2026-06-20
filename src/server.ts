@@ -140,21 +140,21 @@ app.put(
 );
 app.delete("/meal-logs/:id", requireAuth, idValidator(), handleDeleteMealLog);
 
-// Macro goals
+// Nutrition goals
 app.post(
-  "/me/macro-goals",
+  "/me/nutrition-goals",
   requireAuth,
   bodyValidator(nutritionGoalsSchema),
   handleCreateNutritionGoals,
 );
-app.get("/me/macro-goals", requireAuth, handleGetNutritionGoals);
+app.get("/me/nutrition-goals", requireAuth, handleGetNutritionGoals);
 app.put(
-  "/me/macro-goals",
+  "/me/nutrition-goals",
   requireAuth,
   bodyValidator(nutritionGoalsSchema),
   handleUpdateNutritionGoals,
 );
-app.delete("/me/macro-goals", requireAuth, handleDeleteNutritionGoals);
+app.delete("/me/nutrition-goals", requireAuth, handleDeleteNutritionGoals);
 
 // Error handling
 app.use(errorHandler);

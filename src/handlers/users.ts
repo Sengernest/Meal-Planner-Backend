@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
-import { usersService } from "../services/usersService";
-
+import { usersService } from "../services/users";
 
 export async function handleUpdateProfile(req: Request, res: Response) {
     const userId = req.user?.id!;

@@ -24,9 +24,13 @@ export type UserInput = typeof usersTable.$inferInsert;
 export type Profile = {
   name: string;
   email: string;
-  age?: number; 
+  birthDate?: string;
   height?: number;
-  gender?: "male" | "female"; 
+  gender?: "male" | "female";
+}
+
+export type ProfileWithAge = Profile & {
+  age?: number;
 }
 
 export type Food = typeof foodsTable.$inferSelect & {
@@ -120,16 +124,24 @@ export type MealSummary = {
 
 export type NutritionGoals = typeof nutritionGoalsTable.$inferSelect;
 
-export type NutritionGoalsInputWithMacros = {
+export type NutritionGoalsInput = {
   age: number;
   gender: "male" | "female";
   height: number;
   currentWeight: number;
-  goalWeight: number; 
+  goalWeight: number;
   activityLevel: "sedentary" | "light" | "moderate" | "active" | "very_active";
-  goal: "cutting" | "bulking" | "maintenance";
+  goal: "bulk_0.5"
+  | "bulk_0.25"
+  | "maintenance"
+  | "cut_0.25"
+  | "cut_0.5";
+};
+
+export type NutritionGoalsInputWithNutrition = NutritionGoalsInput & {
   calories: number;
   protein: number;
   carbs: number;
   fat: number;
+  etaWeeks: number | null;
 };

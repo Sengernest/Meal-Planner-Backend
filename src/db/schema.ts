@@ -2,7 +2,6 @@ import { relations } from "drizzle-orm";
 import { date, foreignKey } from "drizzle-orm/pg-core";
 import { boolean } from "drizzle-orm/pg-core";
 import { unique } from "drizzle-orm/pg-core";
-import { pgEnum } from "drizzle-orm/pg-core";
 import { timestamp } from "drizzle-orm/pg-core";
 import {
   pgTable,
@@ -17,6 +16,7 @@ export const usersTable = pgTable("users", {
   name: text().notNull(),
   email: text().notNull().unique(),
   password: text().notNull(),
+  birthDate: date(),
   age: integer(),
   height: integer(),
   gender: text(),
@@ -312,9 +312,10 @@ export const nutritionGoalsTable = pgTable("nutrition_goals", {
   currentWeight: numeric({ mode: "number" }).notNull(),
   goalWeight: numeric({ mode: "number" }).notNull(),
   activityLevel: text().notNull(), // sedentary, light, moderate, active, very_active
-  goal: text().notNull(), // cutting, bulking, maintenance
+  goal: text().notNull(), // "bulk_0.5", "bulk_0.25", "maintenance", "cut_0.25", "cut_0.5";
   calories: integer().notNull(),
   carbs: integer().notNull(),
   protein: integer().notNull(),
   fat: integer().notNull(),
+  etaWeeks: integer(),
 });

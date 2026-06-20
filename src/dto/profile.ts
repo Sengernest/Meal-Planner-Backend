@@ -3,7 +3,7 @@ import z from "zod";
 export const profileSchema = z.object({
     name: z.string(),
     email: z.email(),
-    age: z.number().optional(),
+    birthDate: z.string().optional(),
     height: z.number().optional(),
     gender: z.enum(["male", "female"]).optional(),
 });

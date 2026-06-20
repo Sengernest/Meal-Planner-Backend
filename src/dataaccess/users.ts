@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import db from "../db/db";
 import { usersTable } from "../db/schema";
-import { UserInput, User, Profile } from "../types";
+import { UserInput, User, ProfileWithAge } from "../types";
 
 async function createUser(user: UserInput): Promise<User> {
   const [newUser] = await db.insert(usersTable).values(user).returning();
@@ -30,7 +30,7 @@ async function deleteUser(userId: number) {
   await db.delete(usersTable).where(eq(usersTable.id, userId));
 }
 
-async function updateProfile(userId: number, profile: Profile): Promise<User> {
+async function updateProfile(userId: number, profile: ProfileWithAge): Promise<User> {
       const [user] = await db
         .update(usersTable)
         .set(profile)
