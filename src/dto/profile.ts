@@ -5,7 +5,6 @@ export const profileSchema = z.object({
     email: z.email(),
     age: z.number().optional(),
     height: z.number().optional(),
-    weight: z.number().optional(),
     gender: z.enum(["male", "female"]).optional(),
 });
 

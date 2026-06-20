@@ -18,7 +18,6 @@ export const usersTable = pgTable("users", {
   email: text().notNull().unique(),
   password: text().notNull(),
   age: integer(),
-  weight: integer(),
   height: integer(),
   gender: text(), 
 });
@@ -289,7 +288,7 @@ export const foodsToMealLogsRelations = relations(
   }),
 );
 
-export const macroGoalsTable = pgTable("macro_goals", {
+export const nutritionGoalsTable = pgTable("nutrition_goals", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   creatorId: integer("creator_id")
     .references(() => usersTable.id)
@@ -298,7 +297,8 @@ export const macroGoalsTable = pgTable("macro_goals", {
   gender: text().notNull(),
   age: integer().notNull(),
   height: numeric({ mode: "number" }).notNull(),
-  weight: numeric({ mode: "number" }).notNull(),
+  currentWeight: numeric({ mode: "number" }).notNull(),
+  goalWeight: numeric({ mode: "number" }).notNull(),
   activityLevel: text().notNull(), // sedentary, light, moderate, active, very_active
   goal: text().notNull(), // cutting, bulking, maintenance
   calories: integer().notNull(),

@@ -1,6 +1,6 @@
 import z from "zod";
 
-export const macroGoalsSchema = z.object({
+export const nutritionGoalsSchema = z.object({
   age: z.int().positive(),
   gender: z.enum(["male", "female"]),
   weight: z.number().positive(),
@@ -15,4 +15,4 @@ export const macroGoalsSchema = z.object({
   goal: z.enum(["cutting", "bulking", "maintenance"]),
 });
 
-export type MacroGoalsSchema = z.infer<typeof macroGoalsSchema>;
+export type NutritionGoalsSchema = z.infer<typeof nutritionGoalsSchema>;

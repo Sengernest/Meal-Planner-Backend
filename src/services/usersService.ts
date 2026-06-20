@@ -1,4 +1,4 @@
-import { macroGoalsRepository } from "../dataaccess/macroGoals";
+import { nutritionGoalsRepository } from "../dataaccess/nutritionGoals";
 import { Profile, User } from "../types";
 import { usersRepository } from "../dataaccess/users";
 

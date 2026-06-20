@@ -1,6 +1,6 @@
 import express, { json, Request, Response } from "express";
 import { loginSchema, signupSchema } from "./dto/auth";
-import { macroGoalsSchema } from "./dto/macroGoals";
+import { nutritionGoalsSchema } from "./dto/nutritionGoals";
 import { mealPlanSchema } from "./dto/mealPlans";
 import { recipeSchema } from "./dto/recipes";
 import { profileSchema } from "./dto/profile";
@@ -12,11 +12,11 @@ import {
 } from "./handlers/auth";
 import { handleUpdateProfile } from "./handlers/users";
 import {
-  handleCreateMacroGoals,
-  handleDeleteMacroGoals,
-  handleGetMacroGoals,
-  handleUpdateMacroGoals,
-} from "./handlers/macroGoals";
+  handleCreateNutritionGoals,
+  handleDeleteNutritionGoals,
+  handleGetNutritionGoals,
+  handleUpdateNutritionGoals,
+} from "./handlers/nutritionGoals";
 import {
   handleCreateRecipe,
   handleDeleteRecipe,
@@ -144,17 +144,17 @@ app.delete("/meal-logs/:id", requireAuth, idValidator(), handleDeleteMealLog);
 app.post(
   "/me/macro-goals",
   requireAuth,
-  bodyValidator(macroGoalsSchema),
-  handleCreateMacroGoals,
+  bodyValidator(nutritionGoalsSchema),
+  handleCreateNutritionGoals,
 );
-app.get("/me/macro-goals", requireAuth, handleGetMacroGoals);
+app.get("/me/macro-goals", requireAuth, handleGetNutritionGoals);
 app.put(
   "/me/macro-goals",
   requireAuth,
-  bodyValidator(macroGoalsSchema),
-  handleUpdateMacroGoals,
+  bodyValidator(nutritionGoalsSchema),
+  handleUpdateNutritionGoals,
 );
-app.delete("/me/macro-goals", requireAuth, handleDeleteMacroGoals);
+app.delete("/me/macro-goals", requireAuth, handleDeleteNutritionGoals);
 
 // Error handling
 app.use(errorHandler);

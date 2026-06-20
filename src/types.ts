@@ -6,7 +6,7 @@ import {
   mealsTable,
   recipesToMealsTable,
   foodsToMealsTable,
-  macroGoalsTable,
+  nutritionGoalsTable,
   recipesToMealLogsTable,
   mealLogsTable,
   foodsToMealLogsTable,
@@ -25,7 +25,6 @@ export type Profile = {
   name: string;
   email: string;
   age?: number; 
-  weight?: number;
   height?: number;
   gender?: "male" | "female"; 
 }
@@ -119,13 +118,14 @@ export type MealSummary = {
   nutrition: Nutrition;
 };
 
-export type MacroGoals = typeof macroGoalsTable.$inferSelect;
+export type NutritionGoals = typeof nutritionGoalsTable.$inferSelect;
 
-export type MacroGoalsInputWithMacros = {
+export type NutritionGoalsInputWithMacros = {
   age: number;
   gender: "male" | "female";
-  weight: number;
   height: number;
+  currentWeight: number;
+  goalWeight: number; 
   activityLevel: "sedentary" | "light" | "moderate" | "active" | "very_active";
   goal: "cutting" | "bulking" | "maintenance";
   calories: number;
