@@ -31,20 +31,32 @@ async function deleteUser(userId: number) {
 }
 
 async function updateProfile(userId: number, profile: ProfileWithAge): Promise<User> {
-      const [user] = await db
-        .update(usersTable)
-        .set(profile)
-        .where(eq(usersTable.id, userId))
-        .returning();
+  const [user] = await db
+    .update(usersTable)
+    .set(profile)
+    .where(eq(usersTable.id, userId))
+    .returning();
 
-    return user;
+  return user;
 }
 
-export const usersRepository = {
-  createUser,
-  getUsers,
-  getUser,
-  getUserByEmail,
-  deleteUser,
-  updateProfile
-};
+async function changePassword(userId: number, password: string): Promise<User> {
+  const [user] = await db
+    .update(usersTable)
+    .set({password})
+    .where(eq(usersTable.id, userId))
+    .returning();
+
+  return user;
+}
+
+
+  export const usersRepository = {
+    createUser,
+    getUsers,
+    getUser,
+    getUserByEmail,
+    deleteUser,
+    updateProfile,
+    changePassword,
+  };

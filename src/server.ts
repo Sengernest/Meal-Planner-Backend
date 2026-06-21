@@ -1,10 +1,11 @@
 import express, { json, Request, Response } from "express";
-import { loginSchema, signupSchema } from "./dto/auth";
+import { changePasswordSchema, loginSchema, signupSchema } from "./dto/auth";
 import { nutritionGoalsSchema } from "./dto/nutritionGoals";
 import { mealPlanSchema } from "./dto/mealPlans";
 import { recipeSchema } from "./dto/recipes";
 import { profileSchema } from "./dto/profile";
 import {
+  handleChangePassword,
   handleGetCurrentUser,
   handleLogin,
   handleLogout,
@@ -69,8 +70,10 @@ app.get("/", (req: Request, res: Response) => {
 // Auth
 app.post("/signup", bodyValidator(signupSchema), handleSignup);
 app.post("/login", bodyValidator(loginSchema), handleLogin);
+app.patch("/me/password", requireAuth, bodyValidator(changePasswordSchema), handleChangePassword);
 app.post("/logout", handleLogout);
 app.get("/me", requireAuth, handleGetCurrentUser);
+
 
 // Profile
 app.put(

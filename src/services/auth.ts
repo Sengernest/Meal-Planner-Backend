@@ -7,7 +7,7 @@ function createToken(userId: number) {
   return jwt.sign({ userId }, process.env.JWT_SECRET!, { expiresIn: "3d" });
 }
 
-async function handleSignup(
+async function signup(
   userInput: UserInput,
 ): Promise<{ user: User; token: string }> {
   const hashedPassword = await bcrypt.hash(userInput.password, 10);
@@ -19,7 +19,7 @@ async function handleSignup(
   return { user, token };
 }
 
-async function handleLogin(
+async function login(
   userInput: UserInput,
 ): Promise<{ user: User; token: string }> {
   const user = await usersRepository.getUserByEmail(userInput.email);
@@ -35,8 +35,14 @@ async function getUserById(userId: number): Promise<User> {
   return usersRepository.getUser(userId);
 }
 
+async function changePassword(userId: number, password: string): Promise<User> {
+  const hashedPassword = await bcrypt.hash(password, 10);
+  return usersRepository.changePassword(userId, hashedPassword);
+}
+
 export const authService = {
-  handleSignup,
-  handleLogin,
+ signup,
+ login,
   getUserById,
+  changePassword
 };
