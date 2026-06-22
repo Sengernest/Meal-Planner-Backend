@@ -130,6 +130,8 @@ export const mealPlansTable = pgTable("meal_plans", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   creatorId: integer("creator_id").references(() => usersTable.id), // Null if sample meal
   name: text().notNull(), // e.g. Bulking plan
+  description: text(),
+  isActive: boolean().notNull()
 });
 
 export const mealsTable = pgTable(

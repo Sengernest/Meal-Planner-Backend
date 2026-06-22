@@ -123,6 +123,8 @@ async function createMealPlan(
       .values({
         name: mealPlan.name,
         creatorId: creatorId,
+        description: mealPlan.description,
+        isActive: false
       })
       .returning();
 
@@ -163,7 +165,9 @@ async function updateMealPlan(
   await db.transaction(async (tx) => {
     const [updatedPlan] = await tx
       .update(mealPlansTable)
-      .set({ name: mealPlan.name })
+      .set({ name: mealPlan.name,
+        description: mealPlan.description
+       })
       .where(eq(mealPlansTable.id, mealPlanId))
       .returning();
 

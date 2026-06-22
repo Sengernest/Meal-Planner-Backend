@@ -19,6 +19,7 @@ export const mealSchema = z.object({
 
 export const mealPlanSchema = z.object({
   name: z.string(),
+  description: z.string().optional(),
   meals: z.array(mealSchema),
 });
 
