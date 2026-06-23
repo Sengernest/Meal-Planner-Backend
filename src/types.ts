@@ -6,7 +6,7 @@ import {
   mealsTable,
   recipesToMealsTable,
   foodsToMealsTable,
-  macroGoalsTable,
+  nutritionGoalsTable,
   recipesToMealLogsTable,
   mealLogsTable,
   foodsToMealLogsTable,
@@ -21,13 +21,21 @@ export type AuthUser = {
 };
 export type UserInput = typeof usersTable.$inferInsert;
 
+export type ChangePasswordInput = {
+  currentPassword: string,
+  newPassword: string, 
+}
+
 export type Profile = {
   name: string;
   email: string;
-  age?: number; 
-  weight?: number;
+  birthDate?: string;
   height?: number;
-  gender?: "male" | "female"; 
+  gender?: "male" | "female";
+}
+
+export type ProfileWithAge = Profile & {
+  age?: number;
 }
 
 export type Food = typeof foodsTable.$inferSelect & {
@@ -120,17 +128,26 @@ export type MealSummary = {
   nutrition: Nutrition;
 };
 
-export type MacroGoals = typeof macroGoalsTable.$inferSelect;
+export type NutritionGoals = typeof nutritionGoalsTable.$inferSelect;
 
-export type MacroGoalsInputWithMacros = {
+export type NutritionGoalsInput = {
   age: number;
   gender: "male" | "female";
-  weight: number;
   height: number;
+  currentWeight: number;
+  goalWeight: number;
   activityLevel: "sedentary" | "light" | "moderate" | "active" | "very_active";
-  goal: "cutting" | "bulking" | "maintenance";
+  goal: "bulk_0.5"
+  | "bulk_0.25"
+  | "maintenance"
+  | "cut_0.25"
+  | "cut_0.5";
+};
+
+export type NutritionGoalsInputWithNutrition = NutritionGoalsInput & {
   calories: number;
   protein: number;
   carbs: number;
   fat: number;
+  etaWeeks: number | null;
 };

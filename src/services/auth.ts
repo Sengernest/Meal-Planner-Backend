@@ -1,5 +1,5 @@
 import { usersRepository } from "../dataaccess/users";
-import { User, UserInput } from "../types";
+import { ChangePasswordInput, User, UserInput } from "../types";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
@@ -7,7 +7,7 @@ function createToken(userId: number) {
   return jwt.sign({ userId }, process.env.JWT_SECRET!, { expiresIn: "3d" });
 }
 
-async function handleSignup(
+async function signup(
   userInput: UserInput,
 ): Promise<{ user: User; token: string }> {
   const hashedPassword = await bcrypt.hash(userInput.password, 10);
@@ -19,7 +19,7 @@ async function handleSignup(
   return { user, token };
 }
 
-async function handleLogin(
+async function login(
   userInput: UserInput,
 ): Promise<{ user: User; token: string }> {
   const user = await usersRepository.getUserByEmail(userInput.email);
@@ -35,8 +35,19 @@ async function getUserById(userId: number): Promise<User> {
   return usersRepository.getUser(userId);
 }
 
+async function changePassword(userId: number, changePasswordInput: ChangePasswordInput): Promise<User> {
+  const user = await usersRepository.getUser(userId);
+  if (await bcrypt.compare(changePasswordInput.currentPassword, user.password)) {
+    const hashedPassword = await bcrypt.hash(changePasswordInput.newPassword, 10);
+    return usersRepository.changePassword(userId, hashedPassword);
+  } else {
+    throw new Error("Wrong current password");
+  }
+}
+
 export const authService = {
-  handleSignup,
-  handleLogin,
+  signup,
+  login,
   getUserById,
+  changePassword
 };

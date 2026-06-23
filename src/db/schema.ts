@@ -2,7 +2,6 @@ import { relations } from "drizzle-orm";
 import { date, foreignKey } from "drizzle-orm/pg-core";
 import { boolean } from "drizzle-orm/pg-core";
 import { unique } from "drizzle-orm/pg-core";
-import { pgEnum } from "drizzle-orm/pg-core";
 import { timestamp } from "drizzle-orm/pg-core";
 import {
   pgTable,
@@ -17,8 +16,8 @@ export const usersTable = pgTable("users", {
   name: text().notNull(),
   email: text().notNull().unique(),
   password: text().notNull(),
+  birthDate: date(),
   age: integer(),
-  weight: integer(),
   height: integer(),
   gender: text(),
 });
@@ -131,6 +130,9 @@ export const mealPlansTable = pgTable("meal_plans", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   creatorId: integer("creator_id").references(() => usersTable.id), // Null if sample meal
   name: text().notNull(), // e.g. Bulking plan
+  description: text(),
+  isActive: boolean().notNull(),
+  targetCalories: integer().notNull()
 });
 
 export const mealsTable = pgTable(
@@ -301,7 +303,7 @@ export const foodsToMealLogsRelations = relations(
   }),
 );
 
-export const macroGoalsTable = pgTable("macro_goals", {
+export const nutritionGoalsTable = pgTable("nutrition_goals", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   creatorId: integer("creator_id")
     .references(() => usersTable.id)
@@ -310,11 +312,13 @@ export const macroGoalsTable = pgTable("macro_goals", {
   gender: text().notNull(),
   age: integer().notNull(),
   height: numeric({ mode: "number" }).notNull(),
-  weight: numeric({ mode: "number" }).notNull(),
+  currentWeight: numeric({ mode: "number" }).notNull(),
+  goalWeight: numeric({ mode: "number" }).notNull(),
   activityLevel: text().notNull(), // sedentary, light, moderate, active, very_active
-  goal: text().notNull(), // cutting, bulking, maintenance
+  goal: text().notNull(), // "bulk_0.5", "bulk_0.25", "maintenance", "cut_0.25", "cut_0.5";
   calories: integer().notNull(),
   carbs: integer().notNull(),
   protein: integer().notNull(),
   fat: integer().notNull(),
+  etaWeeks: integer(),
 });

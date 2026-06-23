@@ -1,22 +1,23 @@
 import express, { json, Request, Response } from "express";
-import { loginSchema, signupSchema } from "./dto/auth";
-import { macroGoalsSchema } from "./dto/macroGoals";
+import { changePasswordSchema, loginSchema, signupSchema } from "./dto/auth";
+import { nutritionGoalsSchema } from "./dto/nutritionGoals";
 import { mealPlanSchema } from "./dto/mealPlans";
 import { recipeSchema } from "./dto/recipes";
 import { profileSchema } from "./dto/profile";
 import {
+  handleChangePassword,
   handleGetCurrentUser,
   handleLogin,
   handleLogout,
   handleSignup,
 } from "./handlers/auth";
-import { handleUpdateProfile } from "./handlers/users";
+import { handleUpdateProfile } from "./handlers/profile";
 import {
-  handleCreateMacroGoals,
-  handleDeleteMacroGoals,
-  handleGetMacroGoals,
-  handleUpdateMacroGoals,
-} from "./handlers/macroGoals";
+  handleCreateNutritionGoals,
+  handleDeleteNutritionGoals,
+  handleGetNutritionGoals,
+  handleUpdateNutritionGoals,
+} from "./handlers/nutritionGoals";
 import {
   handleCreateRecipe,
   handleDeleteRecipe,
@@ -38,8 +39,10 @@ import {
   handleUpdateMealLog,
 } from "./handlers/mealLogs";
 import {
+  handleActiveMealPlan,
   handleCreateMealPlan,
   handleDeleteMealPlan,
+  handleGetAllMealPlans,
   handleGetMealPlan,
   handleGetSampleMealPlans,
   handleGetUserMealPlans,
@@ -69,8 +72,10 @@ app.get("/", (req: Request, res: Response) => {
 // Auth
 app.post("/signup", bodyValidator(signupSchema), handleSignup);
 app.post("/login", bodyValidator(loginSchema), handleLogin);
+app.patch("/me/password", requireAuth, bodyValidator(changePasswordSchema), handleChangePassword);
 app.post("/logout", handleLogout);
 app.get("/me", requireAuth, handleGetCurrentUser);
+
 
 // Profile
 app.put(
@@ -105,6 +110,7 @@ app.put(
 app.delete("/recipes/:id", requireAuth, idValidator(), handleDeleteRecipe);
 
 // Meal plans
+app.get("/meal-plans", requireAuth, handleGetAllMealPlans);
 app.get("/meal-plans/samples", handleGetSampleMealPlans);
 app.get("/me/meal-plans", requireAuth, handleGetUserMealPlans);
 app.get("/meal-plans/:id", requireAuth, idValidator(), handleGetMealPlan);
@@ -122,6 +128,7 @@ app.put(
   handleUpdateMealPlan,
 );
 app.delete("/meal-plans/:id", requireAuth, idValidator(), handleDeleteMealPlan);
+app.patch("/meal-plans/:id", requireAuth, idValidator(), handleActiveMealPlan);
 
 // Meal logs
 app.get("/me/meal-logs/daily-summary", requireAuth, handleGetDailyMealSummary); // ?date=
@@ -140,21 +147,21 @@ app.put(
 );
 app.delete("/meal-logs/:id", requireAuth, idValidator(), handleDeleteMealLog);
 
-// Macro goals
+// Nutrition goals
 app.post(
-  "/me/macro-goals",
+  "/me/nutrition-goals",
   requireAuth,
-  bodyValidator(macroGoalsSchema),
-  handleCreateMacroGoals,
+  bodyValidator(nutritionGoalsSchema),
+  handleCreateNutritionGoals,
 );
-app.get("/me/macro-goals", requireAuth, handleGetMacroGoals);
+app.get("/me/nutrition-goals", requireAuth, handleGetNutritionGoals);
 app.put(
-  "/me/macro-goals",
+  "/me/nutrition-goals",
   requireAuth,
-  bodyValidator(macroGoalsSchema),
-  handleUpdateMacroGoals,
+  bodyValidator(nutritionGoalsSchema),
+  handleUpdateNutritionGoals,
 );
-app.delete("/me/macro-goals", requireAuth, handleDeleteMacroGoals);
+app.delete("/me/nutrition-goals", requireAuth, handleDeleteNutritionGoals);
 
 // Error handling
 app.use(errorHandler);
