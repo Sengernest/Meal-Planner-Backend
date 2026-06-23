@@ -36,6 +36,6 @@ export async function handleUpdateMealLog(req: Request, res: Response) {
 export async function handleDeleteMealLog(req: Request, res: Response) {
   const mealLogId = Number(req.params.id);
   const userId = req.user?.id!;
-  await mealLogsService.deleteMealLog(mealLogId, userId);
-  res.json({ message: `Deleted meal log: ${mealLogId}` });
+  const deletedLog = await mealLogsService.deleteMealLog(mealLogId, userId);
+  res.json(deletedLog);
 }

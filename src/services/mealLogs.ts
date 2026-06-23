@@ -88,7 +88,8 @@ async function deleteMealLog(mealLogId: number, userId: number) {
   if (mealLog.userId !== userId) {
     throw new UnauthorizedError();
   }
-  return mealLogsRepository.deleteMealLog(mealLogId);
+  await mealLogsRepository.deleteMealLog(mealLogId);
+  return mealLog
 }
 
 export const mealLogsService = {
