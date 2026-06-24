@@ -30,7 +30,11 @@ import {
 import { requireAuth } from "./middleware/auth";
 import { bodyValidator, idValidator } from "./middleware/validation";
 
-import { foodItemSchema, mealLogSchema, recipeItemSchema } from "./dto/mealLogs";
+import {
+  foodEntrySchema,
+  mealLogSchema,
+  recipeEntrySchema,
+} from "./dto/mealLogs";
 import { handleGetFoods, handleSearchFoods } from "./handlers/foods";
 import {
   handleAddFoodToEntry,
@@ -157,13 +161,13 @@ app.put(
 app.post(
   "/meal-logs/:entryId/foods",
   requireAuth,
-  bodyValidator(foodItemSchema),
+  bodyValidator(foodEntrySchema),
   handleAddFoodToEntry,
 ); // Add food item to meal entry
 app.post(
   "/meal-logs/:entryId/recipes",
   requireAuth,
-  bodyValidator(recipeItemSchema),
+  bodyValidator(recipeEntrySchema),
   handleAddRecipeToEntry,
 ); // Add recipe item to meal entry
 app.delete(

@@ -1,8 +1,8 @@
 import { mealsRepository } from "../dataaccess/meals";
-import { Meal, MealWithNutrition } from "../types";
+import { MealPlanMeal, MealWithNutrition } from "../types";
 import { sumMealNutrition } from "./nutrition";
 
-function withNutrition(meal: Meal): MealWithNutrition {
+function withNutrition(meal: MealPlanMeal): MealWithNutrition {
   return {
     ...meal,
     nutrition: sumMealNutrition(meal),

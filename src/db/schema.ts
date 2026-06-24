@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import { date, foreignKey } from "drizzle-orm/pg-core";
+import { pgEnum } from "drizzle-orm/pg-core";
 import { boolean } from "drizzle-orm/pg-core";
 import { unique } from "drizzle-orm/pg-core";
 import { timestamp } from "drizzle-orm/pg-core";
@@ -121,8 +122,8 @@ export const foodsToRecipesRelations = relations(
     }),
     unit: one(unitsTable, {
       fields: [foodsToRecipesTable.unitId],
-      references: [unitsTable.id]
-    })
+      references: [unitsTable.id],
+    }),
   }),
 );
 
@@ -132,7 +133,7 @@ export const mealPlansTable = pgTable("meal_plans", {
   name: text().notNull(), // e.g. Bulking plan
   description: text(),
   isActive: boolean().notNull(),
-  targetCalories: integer().notNull()
+  targetCalories: integer().notNull(),
 });
 
 export const mealsTable = pgTable(
@@ -225,80 +226,58 @@ export const foodsToMealsRelations = relations(
   }),
 );
 
-export const mealLogsTable = pgTable("meal_logs", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  mealId: integer("meal_id").references(() => mealsTable.id),
+export const mealSlotEnum = pgEnum("meal_slot", [
+  "breakfast",
+  "lunch",
+  "dinner",
+  "snack",
+]);
+
+export const foodEntriesTable = pgTable("food_entries", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   userId: integer("user_id")
     .references(() => usersTable.id)
     .notNull(),
-  logDate: timestamp("log_date", { withTimezone: true }).notNull(),
-  mealIndex: integer("meal_index").notNull(), // e.g. Meal 1, Meal 2
+  logDate: date("log_date", { mode: "string" }).notNull(),
+  mealSlot: mealSlotEnum("meal_slot").notNull(),
+  foodId: integer("food_id")
+    .references(() => foodsTable.id)
+    .notNull(),
+  amount: numeric({ mode: "number" }).notNull(),
+  unitId: integer("unit_id")
+    .references(() => unitsTable.id)
+    .notNull(),
 });
 
-export const recipesToMealLogsTable = pgTable(
-  "recipes_to_meal_logs",
-  {
-    itemId: integer("item_id").primaryKey().generatedAlwaysAsIdentity(),
-    mealLogId: integer("meal_log_id")
-      .references(() => mealLogsTable.id)
-      .notNull(),
-    recipeId: integer("recipe_id")
-      .references(() => recipesTable.id)
-      .notNull(),
-    servings: integer().notNull(),
-  }
-);
-
-export const foodsToMealLogsTable = pgTable(
-  "foods_to_meal_logs",
-  {
-    itemId: integer("item_id").primaryKey().generatedAlwaysAsIdentity(),
-    mealLogId: integer("meal_log_id")
-      .references(() => mealLogsTable.id)
-      .notNull(),
-    foodId: integer("food_id")
-      .references(() => foodsTable.id)
-      .notNull(),
-    amount: numeric({ mode: "number" }).notNull(),
-    unitId: integer("unit_id")
-      .references(() => unitsTable.id)
-      .notNull(),
-  }
-);
-
-export const mealLogsRelations = relations(mealLogsTable, ({ many }) => ({
-  recipeItems: many(recipesToMealLogsTable),
-  foodItems: many(foodsToMealLogsTable),
-}));
-
-export const recipesToMealLogsRelations = relations(
-  recipesToMealLogsTable,
+export const foodEntriesToFoodsRelations = relations(
+  foodEntriesTable,
   ({ one }) => ({
-    recipe: one(recipesTable, {
-      fields: [recipesToMealLogsTable.recipeId],
-      references: [recipesTable.id],
-    }),
-    mealLog: one(mealLogsTable, {
-      fields: [recipesToMealLogsTable.mealLogId],
-      references: [mealLogsTable.id],
+    food: one(foodsTable, {
+      fields: [foodEntriesTable.foodId],
+      references: [foodsTable.id],
     }),
   }),
 );
 
-export const foodsToMealLogsRelations = relations(
-  foodsToMealLogsTable,
+export const recipeEntriesTable = pgTable("recipe_entries", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  userId: integer("user_id")
+    .references(() => usersTable.id)
+    .notNull(),
+  logDate: date("log_date", { mode: "string" }).notNull(),
+  mealSlot: mealSlotEnum("meal_slot").notNull(),
+  recipeId: integer("recipe_id")
+    .references(() => recipesTable.id)
+    .notNull(),
+  servings: integer().notNull(),
+});
+
+export const recipeEntriesToRecipesRelations = relations(
+  recipeEntriesTable,
   ({ one }) => ({
-    food: one(foodsTable, {
-      fields: [foodsToMealLogsTable.foodId],
-      references: [foodsTable.id],
-    }),
-    unit: one(unitsTable, {
-      fields: [foodsToMealLogsTable.unitId],
-      references: [unitsTable.id],
-    }),
-    mealLog: one(mealLogsTable, {
-      fields: [foodsToMealLogsTable.mealLogId],
-      references: [mealLogsTable.id],
+    recipe: one(recipesTable, {
+      fields: [recipeEntriesTable.recipeId],
+      references: [recipesTable.id],
     }),
   }),
 );

@@ -1,11 +1,11 @@
 import { mealLogsRepository } from "../dataaccess/mealLogs";
 import { MealLogSchema } from "../dto/mealLogs";
 import { NotFoundError, UnauthorizedError } from "../errors/errors";
-import { MealLog, MealLogWithNutrition, MealSummary } from "../types";
+import { MealLog, Meal, MealLog } from "../types";
 import { foodsService } from "./foods";
 import { sumMealNutrition, sumMealsNutrition, sumNutrition } from "./nutrition";
 
-function withNutrition(mealLog: MealLog): MealLogWithNutrition {
+function withNutrition(mealLog: MealLog): Meal {
   return {
     ...mealLog,
     nutrition: sumMealNutrition(mealLog),
@@ -16,10 +16,7 @@ function withNutrition(mealLog: MealLog): MealLogWithNutrition {
   };
 }
 
-async function getMealLogs(
-  userId: number,
-  logDate: Date,
-): Promise<MealLogWithNutrition[]> {
+async function getMealLogs(userId: number, logDate: Date): Promise<Meal[]> {
   const mealLogs = await mealLogsRepository.getMealLogs(userId, logDate);
   return mealLogs.map(withNutrition);
 }
@@ -27,7 +24,7 @@ async function getMealLogs(
 async function getDailyMealSummary(
   userId: number,
   date: Date,
-): Promise<MealSummary> {
+): Promise<MealLog> {
   const mealLogs = await getMealLogs(userId, date);
   return {
     meals: mealLogs,
@@ -38,7 +35,7 @@ async function getDailyMealSummary(
 async function createMealLog(
   schema: MealLogSchema,
   userId: number,
-): Promise<MealLogWithNutrition> {
+): Promise<Meal> {
   // Check if food items have valid units
   for (const foodItem of schema.foodItems) {
     await foodsService.assertValidUnit(foodItem.foodId, foodItem.unitId);
@@ -55,7 +52,7 @@ async function updateMealLog(
   mealLogId: number,
   schema: MealLogSchema,
   userId: number,
-): Promise<MealLogWithNutrition> {
+): Promise<Meal> {
   // Check if food items have valid units
   for (const foodItem of schema.foodItems) {
     await foodsService.assertValidUnit(foodItem.foodId, foodItem.unitId);
@@ -69,10 +66,7 @@ async function updateMealLog(
   if (mealLog.userId !== userId) {
     throw new UnauthorizedError();
   }
-  const updatedLog = await mealLogsRepository.updateMealLog(
-    mealLogId,
-    schema,
-  );
+  const updatedLog = await mealLogsRepository.updateMealLog(mealLogId, schema);
   if (!updatedLog) {
     throw new NotFoundError();
   }
@@ -89,7 +83,7 @@ async function deleteMealLog(mealLogId: number, userId: number) {
     throw new UnauthorizedError();
   }
   await mealLogsRepository.deleteMealLog(mealLogId);
-  return mealLog
+  return mealLog;
 }
 
 export const mealLogsService = {
