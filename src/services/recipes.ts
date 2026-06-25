@@ -3,14 +3,9 @@ import { RecipeSchema } from "../dto/recipes";
 import { NotFoundError, UnauthorizedError } from "../errors/errors";
 import { Recipe, RecipeWithNutrition } from "../types";
 import { foodsService } from "./foods";
-import { computeFoodItemsNutrition } from "./nutrition";
+import { recipeToWithNutrition } from "./nutrition";
 
-function withNutrition(recipe: Recipe): RecipeWithNutrition {
-  return {
-    ...recipe,
-    nutrition: computeFoodItemsNutrition(recipe.ingredients, recipe.servings),
-  };
-}
+const withNutrition = recipeToWithNutrition
 
 // Get all sample recipes together with recipes created by a given user
 async function getAllRecipes(userId: number): Promise<RecipeWithNutrition[]> {
