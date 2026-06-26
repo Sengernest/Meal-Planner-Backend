@@ -79,8 +79,10 @@ async function getMealPlan(mealPlanId: number): Promise<MealPlanView> {
   const dinner = getMealPlanMeal(mealPlan, "dinner");
   const snack = getMealPlanMeal(mealPlan, "snack");
 
+  const {foodItems, recipeItems, ...baseMealPlan} = mealPlan
+
   return {
-    ...mealPlan,
+    ...baseMealPlan,
     breakfast,
     lunch,
     dinner,

@@ -182,7 +182,7 @@ export type MealPlan = typeof mealPlansTable.$inferSelect & {
   recipeItems: MealPlanRecipe[];
 }
 
-export type MealPlanView = MealPlan & {
+export type MealPlanView = typeof mealPlansTable.$inferSelect & {
   nutrition: Nutrition;
   breakfast: MealPlanMealWithNutrition;
   lunch: MealPlanMealWithNutrition;
