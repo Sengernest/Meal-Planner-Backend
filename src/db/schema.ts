@@ -64,7 +64,7 @@ export const recipesTable = pgTable("recipes", {
   servings: integer().notNull(),
   prepTime: integer(),
   cookTime: integer(),
-  category: text()
+  category: text(),
 });
 
 // Amount of a food item in a specific recipe, i.e. ingredients
@@ -137,102 +137,76 @@ export const mealPlansTable = pgTable("meal_plans", {
   targetCalories: integer().notNull(),
 });
 
-export const mealsTable = pgTable(
-  "meals",
-  {
-    id: integer().primaryKey().generatedAlwaysAsIdentity(),
-    mealPlanId: integer("meal_plan_id")
-      .references(() => mealPlansTable.id, { onDelete: "cascade" })
-      .notNull(),
-    mealPlanIndex: integer().notNull(),
-  },
-  (table) => [unique().on(table.mealPlanId, table.mealPlanIndex)],
-);
-
-// Number of servings of a recipe in a specific meal
-export const recipesToMealsTable = pgTable(
-  "recipes_to_meals",
-  {
-    recipeId: integer("recipe_id")
-      .references(() => recipesTable.id)
-      .notNull(),
-    mealId: integer("meal_id")
-      .references(() => mealsTable.id, { onDelete: "cascade" })
-      .notNull(),
-    servings: integer().notNull(),
-  },
-  (table) => [primaryKey({ columns: [table.recipeId, table.mealId] })],
-);
-
-// Amount of a food in a specific meal
-export const foodsToMealsTable = pgTable(
-  "foods_to_meals",
-  {
-    foodId: integer("food_id")
-      .references(() => foodsTable.id)
-      .notNull(),
-    mealId: integer("meal_id")
-      .references(() => mealsTable.id, { onDelete: "cascade" })
-      .notNull(),
-    amount: numeric({ mode: "number" }).notNull(),
-    unitId: integer("unit_id")
-      .references(() => unitsTable.id)
-      .notNull(),
-  },
-  (table) => [primaryKey({ columns: [table.foodId, table.mealId] })],
-);
-
-export const mealPlansRelations = relations(mealPlansTable, ({ many }) => ({
-  meals: many(mealsTable),
-}));
-
-export const mealsRelations = relations(mealsTable, ({ many, one }) => ({
-  mealPlan: one(mealPlansTable, {
-    fields: [mealsTable.mealPlanId],
-    references: [mealPlansTable.id],
-  }),
-  recipeItems: many(recipesToMealsTable),
-  foodItems: many(foodsToMealsTable),
-}));
-
-export const recipesToMealsRelations = relations(
-  recipesToMealsTable,
-  ({ one }) => ({
-    recipe: one(recipesTable, {
-      fields: [recipesToMealsTable.recipeId],
-      references: [recipesTable.id],
-    }),
-    meal: one(mealsTable, {
-      fields: [recipesToMealsTable.mealId],
-      references: [mealsTable.id],
-    }),
-  }),
-);
-
-export const foodsToMealsRelations = relations(
-  foodsToMealsTable,
-  ({ one }) => ({
-    food: one(foodsTable, {
-      fields: [foodsToMealsTable.foodId],
-      references: [foodsTable.id],
-    }),
-    unit: one(unitsTable, {
-      fields: [foodsToMealsTable.unitId],
-      references: [unitsTable.id],
-    }),
-    meal: one(mealsTable, {
-      fields: [foodsToMealsTable.mealId],
-      references: [mealsTable.id],
-    }),
-  }),
-);
-
 export const mealSlotEnum = pgEnum("meal_slot", [
   "breakfast",
   "lunch",
   "dinner",
   "snack",
 ]);
+
+export const foodsToMealPlansTable = pgTable("foods_to_meal_plans", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  foodId: integer("food_id")
+    .references(() => foodsTable.id)
+    .notNull(),
+  mealPlanId: integer("meal_plan_id")
+    .references(() => mealPlansTable.id, { onDelete: "cascade" })
+    .notNull(),
+  mealSlot: mealSlotEnum("meal_slot").notNull(),
+  amount: numeric({ mode: "number" }).notNull(),
+  unitId: integer("unit_id")
+    .references(() => unitsTable.id)
+    .notNull(),
+});
+
+export const foodsToMealPlansRelations = relations(
+  foodsToMealPlansTable,
+  ({ one }) => ({
+    food: one(foodsTable, {
+      fields: [foodsToMealPlansTable.foodId],
+      references: [foodsTable.id],
+    }),
+    unit: one(unitsTable, {
+      fields: [foodsToMealPlansTable.unitId],
+      references: [unitsTable.id],
+    }),
+    mealPlan: one(mealPlansTable, {
+      fields: [foodsToMealPlansTable.mealPlanId],
+      references: [mealPlansTable.id]
+    })
+  }),
+);
+
+export const recipesToMealPlansTable = pgTable("recipes_to_meals", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  recipeId: integer("recipe_id")
+    .references(() => recipesTable.id)
+    .notNull(),
+  mealPlanId: integer("meal_plan_id")
+    .references(() => mealPlansTable.id, { onDelete: "cascade" })
+    .notNull(),
+  mealSlot: mealSlotEnum("meal_slot").notNull(),
+  servings: integer().notNull(),
+});
+
+export const recipesToMealPlansRelations = relations(
+  recipesToMealPlansTable,
+  ({ one }) => ({
+    recipe: one(recipesTable, {
+      fields: [recipesToMealPlansTable.recipeId],
+      references: [recipesTable.id],
+    }),
+    mealPlan: one(mealPlansTable, {
+      fields: [recipesToMealPlansTable.mealPlanId],
+      references: [mealPlansTable.id],
+    }),
+  }),
+);
+
+export const mealPlansRelations = relations(mealPlansTable, ({ many }) => ({
+  foodItems: many(foodsTable),
+  recipeItems: many(recipesTable),
+}));
 
 export const foodEntriesTable = pgTable("food_entries", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
@@ -280,7 +254,7 @@ export const recipeEntriesRelations = relations(
     recipe: one(recipesTable, {
       fields: [recipeEntriesTable.recipeId],
       references: [recipesTable.id],
-    })
+    }),
   }),
 );
 

@@ -5,7 +5,7 @@ import {
   foodsToRecipesTable,
   mealsTable,
   recipesToMealsTable,
-  foodsToMealsTable,
+  foodsToMealPlansTable,
   nutritionGoalsTable,
   recipeEntriesTable,
   foodEntriesTable,
@@ -157,7 +157,7 @@ export type MealRecipe = typeof recipesToMealsTable.$inferSelect & {
   recipe: Recipe;
 };
 
-export type MealFood = typeof foodsToMealsTable.$inferSelect & {
+export type MealFood = typeof foodsToMealPlansTable.$inferSelect & {
   food: Food;
   unit: Unit;
 };

@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import db from "../db/db";
 import {
-  foodsToMealsTable,
+  foodsToMealPlansTable,
   mealsTable,
   recipesToMealsTable,
 } from "../db/schema";

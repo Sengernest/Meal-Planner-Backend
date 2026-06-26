@@ -1,6 +1,6 @@
 import { recipesRepository } from "../dataaccess/recipes";
 import { RecipeSchema } from "../dto/recipes";
-import { NotFoundError, UnauthorizedError } from "../errors/errors";
+import { BusinessError, NotFoundError, UnauthorizedError } from "../errors/errors";
 import { Recipe, RecipeWithNutrition } from "../types";
 import { foodsService } from "./foods";
 import { recipeToWithNutrition } from "./nutrition";
@@ -65,6 +65,9 @@ async function updateRecipe(
   const recipe = await recipesRepository.getRecipe(recipeId);
   if (!recipe) {
     throw new NotFoundError();
+  }
+  if (recipe.isSample) {
+    throw new BusinessError("Cannot edit sample recipe")
   }
   // Ensure that the recipe can only be updated by its creator
   if (recipe.creatorId !== userId) {

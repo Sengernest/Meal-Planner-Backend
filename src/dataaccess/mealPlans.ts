@@ -1,7 +1,7 @@
 import { and, eq, isNull, or, SQL } from "drizzle-orm";
 import db from "../db/db";
 import {
-  foodsToMealsTable,
+  foodsToMealPlansTable,
   mealPlansTable,
   mealsTable,
   recipesToMealsTable,
@@ -114,15 +114,13 @@ async function getUserMealPlans(userId: number): Promise<MealPlan[]> {
 }
 
 // Get all sample meal plans together with meal plans created by a given user
-async function getAllMealPlans(userId: number): Promise<MealPlan[] | undefined> {
+async function getAllMealPlans(
+  userId: number,
+): Promise<MealPlan[] | undefined> {
   return getMealPlans(
-    or(
-      eq(mealPlansTable.creatorId, userId),
-      isNull(mealPlansTable.creatorId),
-    )!,
+    or(eq(mealPlansTable.creatorId, userId), isNull(mealPlansTable.creatorId))!,
   );
 }
-
 
 async function createMealPlan(
   mealPlan: MealPlanSchema,
@@ -136,7 +134,7 @@ async function createMealPlan(
         creatorId: creatorId,
         description: mealPlan.description,
         isActive: false,
-        targetCalories: mealPlan.targetCalories
+        targetCalories: mealPlan.targetCalories,
       })
       .returning();
 
@@ -157,7 +155,7 @@ async function createMealPlan(
         );
       }
       if (meal.foodItems.length > 0) {
-        await tx.insert(foodsToMealsTable).values(
+        await tx.insert(foodsToMealPlansTable).values(
           meal.foodItems.map((foodItem) => ({
             ...foodItem,
             mealId: newMeal.id,
@@ -180,7 +178,7 @@ async function updateMealPlan(
       .set({
         name: mealPlan.name,
         description: mealPlan.description,
-        targetCalories: mealPlan.targetCalories
+        targetCalories: mealPlan.targetCalories,
       })
       .where(eq(mealPlansTable.id, mealPlanId))
       .returning();
@@ -207,7 +205,7 @@ async function updateMealPlan(
         );
       }
       if (meal.foodItems.length > 0) {
-        await tx.insert(foodsToMealsTable).values(
+        await tx.insert(foodsToMealPlansTable).values(
           meal.foodItems.map((foodItem) => ({
             ...foodItem,
             mealId: newMeal.id,
@@ -224,8 +222,6 @@ async function deleteMealPlan(mealPlanId: number) {
     .delete(mealPlansTable)
     .where(eq(mealPlansTable.id, mealPlanId));
 }
-
-
 
 async function activateMealPlan(
   mealPlanId: number,
@@ -261,5 +257,5 @@ export const mealPlansRepository = {
   createMealPlan,
   updateMealPlan,
   deleteMealPlan,
-  activateMealPlan
+  activateMealPlan,
 };
