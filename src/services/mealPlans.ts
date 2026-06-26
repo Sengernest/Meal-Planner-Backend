@@ -7,6 +7,7 @@ import {
   MealPlanMealWithNutrition,
   MealPlanView,
   MealSlot,
+  Nutrition,
 } from "../types";
 import { foodsService } from "./foods";
 import {
@@ -90,12 +91,12 @@ async function getMealPlan(mealPlanId: number): Promise<MealPlanView> {
 
 async function getSampleMealPlans() {
   const mealPlans = await mealPlansRepository.getSampleMealPlans();
-  return mealPlans;
+  return Promise.all(mealPlans.map(mealPlan => getMealPlan(mealPlan.id)));
 }
 
 async function getUserMealPlans(userId: number) {
   const mealPlans = await mealPlansRepository.getUserMealPlans(userId);
-  return mealPlans;
+  return Promise.all(mealPlans.map((mealPlan) => getMealPlan(mealPlan.id)));
 }
 
 async function getAllMealPlans(userId: number) {
@@ -103,7 +104,7 @@ async function getAllMealPlans(userId: number) {
   if (!mealPlans) {
     throw new NotFoundError();
   }
-  return mealPlans;
+  return Promise.all(mealPlans.map((mealPlan) => getMealPlan(mealPlan.id)));
 }
 
 async function createMealPlan(schema: MealPlanSchema, userId: number) {
