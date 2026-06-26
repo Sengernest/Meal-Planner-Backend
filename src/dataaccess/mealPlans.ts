@@ -3,8 +3,7 @@ import db from "../db/db";
 import {
   foodsToMealPlansTable,
   mealPlansTable,
-  mealsTable,
-  recipesToMealsTable,
+  recipesToMealPlansTable,
 } from "../db/schema";
 import { MealPlanSchema } from "../dto/mealPlans";
 import { MealPlan } from "../types";
@@ -13,44 +12,40 @@ async function getMealPlan(mealPlanId: number): Promise<MealPlan | undefined> {
   return db.query.mealPlansTable.findFirst({
     where: eq(mealPlansTable.id, mealPlanId),
     with: {
-      meals: {
+      recipeItems: {
         with: {
-          recipeItems: {
+          recipe: {
             with: {
-              recipe: {
+              ingredients: {
                 with: {
-                  ingredients: {
+                  food: {
                     with: {
-                      food: {
+                      units: {
                         with: {
-                          units: {
-                            with: {
-                              unit: true,
-                            },
-                          },
+                          unit: true,
                         },
                       },
-                      unit: true,
                     },
                   },
+                  unit: true,
                 },
               },
             },
           },
-          foodItems: {
+        },
+      },
+      foodItems: {
+        with: {
+          food: {
             with: {
-              food: {
+              units: {
                 with: {
-                  units: {
-                    with: {
-                      unit: true,
-                    },
-                  },
+                  unit: true,
                 },
               },
-              unit: true,
             },
           },
+          unit: true,
         },
       },
     },
@@ -61,44 +56,40 @@ async function getMealPlans(filterCondition: SQL): Promise<MealPlan[]> {
   return db.query.mealPlansTable.findMany({
     where: filterCondition,
     with: {
-      meals: {
+      recipeItems: {
         with: {
-          recipeItems: {
+          recipe: {
             with: {
-              recipe: {
+              ingredients: {
                 with: {
-                  ingredients: {
+                  food: {
                     with: {
-                      food: {
+                      units: {
                         with: {
-                          units: {
-                            with: {
-                              unit: true,
-                            },
-                          },
+                          unit: true,
                         },
                       },
-                      unit: true,
                     },
                   },
+                  unit: true,
                 },
               },
             },
           },
-          foodItems: {
+        },
+      },
+      foodItems: {
+        with: {
+          food: {
             with: {
-              food: {
+              units: {
                 with: {
-                  units: {
-                    with: {
-                      unit: true,
-                    },
-                  },
+                  unit: true,
                 },
               },
-              unit: true,
             },
           },
+          unit: true,
         },
       },
     },
@@ -126,7 +117,7 @@ async function createMealPlan(
   mealPlan: MealPlanSchema,
   creatorId: number,
 ): Promise<MealPlan | undefined> {
-  const newMealPlan = await db.transaction(async (tx) => {
+  const mealPlanId = await db.transaction(async (tx) => {
     const [newMealPlan] = await tx
       .insert(mealPlansTable)
       .values({
@@ -138,34 +129,26 @@ async function createMealPlan(
       })
       .returning();
 
-    for (const meal of mealPlan.meals) {
-      const [newMeal] = await tx
-        .insert(mealsTable)
-        .values({
+    if (mealPlan.foodItems.length > 0) {
+      await tx.insert(foodsToMealPlansTable).values(
+        mealPlan.foodItems.map((foodItem) => ({
+          ...foodItem,
           mealPlanId: newMealPlan.id,
-          mealPlanIndex: meal.mealPlanIndex,
-        })
-        .returning();
-      if (meal.recipeItems.length > 0) {
-        await tx.insert(recipesToMealsTable).values(
-          meal.recipeItems.map((recipeItem) => ({
-            ...recipeItem,
-            mealId: newMeal.id,
-          })),
-        );
-      }
-      if (meal.foodItems.length > 0) {
-        await tx.insert(foodsToMealPlansTable).values(
-          meal.foodItems.map((foodItem) => ({
-            ...foodItem,
-            mealId: newMeal.id,
-          })),
-        );
-      }
+        })),
+      );
     }
-    return newMealPlan;
+    if (mealPlan.recipeItems.length > 0) {
+      await tx.insert(recipesToMealPlansTable).values(
+        mealPlan.recipeItems.map((recipeItem) => ({
+          ...recipeItem,
+          mealPlanId: newMealPlan.id,
+        })),
+      );
+    }
+
+    return newMealPlan.id;
   });
-  return getMealPlan(newMealPlan.id);
+  return getMealPlan(mealPlanId);
 }
 
 async function updateMealPlan(
@@ -173,45 +156,43 @@ async function updateMealPlan(
   mealPlan: MealPlanSchema,
 ): Promise<MealPlan | undefined> {
   await db.transaction(async (tx) => {
-    const [updatedPlan] = await tx
+    await tx
       .update(mealPlansTable)
       .set({
         name: mealPlan.name,
         description: mealPlan.description,
         targetCalories: mealPlan.targetCalories,
       })
-      .where(eq(mealPlansTable.id, mealPlanId))
-      .returning();
+      .where(eq(mealPlansTable.id, mealPlanId));
 
-    for (const meal of mealPlan.meals) {
-      // Delete all previous meals in this meal plan
-      // Meal recipes and meal foods are cascade deleted
-      await tx.delete(mealsTable).where(eq(mealsTable.mealPlanId, mealPlanId));
+    // Delete existing food items in meal plan
+    await tx
+      .delete(foodsToMealPlansTable)
+      .where(eq(foodsToMealPlansTable.mealPlanId, mealPlanId));
 
-      // Insert updated meal
-      const [newMeal] = await tx
-        .insert(mealsTable)
-        .values({
-          mealPlanId: updatedPlan.id,
-          mealPlanIndex: meal.mealPlanIndex,
-        })
-        .returning();
-      if (meal.recipeItems.length > 0) {
-        await tx.insert(recipesToMealsTable).values(
-          meal.recipeItems.map((recipeItem) => ({
-            ...recipeItem,
-            mealId: newMeal.id,
-          })),
-        );
-      }
-      if (meal.foodItems.length > 0) {
-        await tx.insert(foodsToMealPlansTable).values(
-          meal.foodItems.map((foodItem) => ({
-            ...foodItem,
-            mealId: newMeal.id,
-          })),
-        );
-      }
+    // Delete existing recipe items in meal plan
+    await tx
+      .delete(recipesToMealPlansTable)
+      .where(eq(recipesToMealPlansTable.mealPlanId, mealPlanId));
+
+    // Replace with new food items
+    if (mealPlan.foodItems.length > 0) {
+      await tx.insert(foodsToMealPlansTable).values(
+        mealPlan.foodItems.map((foodItem) => ({
+          ...foodItem,
+          mealPlanId,
+        })),
+      );
+    }
+
+    // Replace with new recipe items
+    if (mealPlan.recipeItems.length > 0) {
+      await tx.insert(recipesToMealPlansTable).values(
+        mealPlan.recipeItems.map((recipeItem) => ({
+          ...recipeItem,
+          mealPlanId,
+        })),
+      );
     }
   });
   return getMealPlan(mealPlanId);
