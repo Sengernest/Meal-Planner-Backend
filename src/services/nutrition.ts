@@ -16,7 +16,7 @@ function roundValue(value: number) {
   return Math.round(value * 10) / 10;
 }
 
-function roundNutrition(nutrition: Nutrition): Nutrition {
+export function roundNutrition(nutrition: Nutrition): Nutrition {
   return {
     calories: roundValue(nutrition.calories),
     macros: {

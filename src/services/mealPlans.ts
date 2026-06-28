@@ -14,6 +14,7 @@ import {
   foodItemToWithNutrition,
   multiplyNutrition,
   recipeToWithNutrition,
+  roundNutrition,
   sumNutrition,
 } from "./nutrition";
 
@@ -61,9 +62,8 @@ function getMealPlanMeal(
   return {
     foodItems: foodItemsWithNutrition,
     recipeItems: recipeItemsWithNutrition,
-    nutrition: sumNutrition(
-      ...foodItemsWithNutrition,
-      ...recipeItemsWithNutrition,
+    nutrition: roundNutrition(
+      sumNutrition(...foodItemsWithNutrition, ...recipeItemsWithNutrition),
     ),
   };
 }
@@ -79,7 +79,7 @@ async function getMealPlan(mealPlanId: number): Promise<MealPlanView> {
   const dinner = getMealPlanMeal(mealPlan, "dinner");
   const snack = getMealPlanMeal(mealPlan, "snack");
 
-  const {foodItems, recipeItems, ...baseMealPlan} = mealPlan
+  const { foodItems, recipeItems, ...baseMealPlan } = mealPlan;
 
   return {
     ...baseMealPlan,
@@ -87,13 +87,13 @@ async function getMealPlan(mealPlanId: number): Promise<MealPlanView> {
     lunch,
     dinner,
     snack,
-    nutrition: sumNutrition(breakfast, lunch, dinner, snack),
+    nutrition: roundNutrition(sumNutrition(breakfast, lunch, dinner, snack)),
   };
 }
 
 async function getSampleMealPlans() {
   const mealPlans = await mealPlansRepository.getSampleMealPlans();
-  return Promise.all(mealPlans.map(mealPlan => getMealPlan(mealPlan.id)));
+  return Promise.all(mealPlans.map((mealPlan) => getMealPlan(mealPlan.id)));
 }
 
 async function getUserMealPlans(userId: number) {
