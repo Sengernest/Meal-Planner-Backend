@@ -16,8 +16,14 @@ export const recipeEntrySchema = z.object({
   servings: z.int().positive(),
 });
 
+export const importFromMealPlanSchema = z.object({
+  logDate: z.string(),
+  mealSlot: z.enum(mealSlotEnum.enumValues),
+});
+
 export type FoodEntrySchema = z.infer<typeof foodEntrySchema>;
 export type RecipeEntrySchema = z.infer<typeof recipeEntrySchema>;
+export type ImportFromMealPlanSchema = z.infer<typeof importFromMealPlanSchema>;
 
 export const mealLogsQuerySchema = z.object({
   date: z.string()

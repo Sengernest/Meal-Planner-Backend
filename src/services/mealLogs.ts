@@ -1,6 +1,8 @@
 import { mealLogsRepository } from "../dataaccess/mealLogs";
+import { mealPlansRepository } from "../dataaccess/mealPlans";
 import {
   FoodEntrySchema,
+  ImportFromMealPlanSchema,
   RecipeEntrySchema,
   recipeEntrySchema,
 } from "../dto/mealLogs";
@@ -172,6 +174,27 @@ async function removeRecipeEntry(
   return entry;
 }
 
+async function importFromMealPlanEntries(
+  userId: number,
+  schema: ImportFromMealPlanSchema
+) : Promise<MealEntryWithNutrition> {
+
+  const activeMealPlan = await mealPlansRepository.getActiveMealPlan(userId);
+
+  if (!activeMealPlan) {
+    throw new NotFoundError("No active meal plan. Please set a meal plan as active or create one.");
+  }
+
+  await mealLogsRepository.importFromMealPlan(
+    userId,
+    schema,
+    activeMealPlan,
+  );
+  
+  const mealEntry = await getMealEntry(userId, schema.logDate, schema.mealSlot);
+  return mealEntry; 
+}
+
 export const mealLogsService = {
   getMealLog,
   addFoodEntry,
@@ -180,4 +203,5 @@ export const mealLogsService = {
   updateRecipeEntry,
   removeFoodEntry,
   removeRecipeEntry,
+  importFromMealPlanEntries,
 };
