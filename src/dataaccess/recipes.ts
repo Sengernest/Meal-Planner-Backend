@@ -148,7 +148,10 @@ async function deleteRecipe(recipeId: number) {
 }
 
 async function saveRecipe(recipeId: number, userId: number) {
-  return db.insert(savedRecipesTable).values({ recipeId, userId });
+  return db
+    .insert(savedRecipesTable)
+    .values({ recipeId, userId })
+    .onConflictDoNothing();
 }
 
 async function unsaveRecipe(recipeId: number, userId: number) {
