@@ -8,7 +8,8 @@ export async function handleGetAllRecipes(req: Request, res: Response) {
 }
 
 export async function handleGetSampleRecipes(req: Request, res: Response) {
-  const recipes = await recipesService.getSampleRecipes();
+  const userId = req.user?.id;
+  const recipes = await recipesService.getSampleRecipes(userId);
   res.json(recipes);
 }
 
@@ -16,6 +17,12 @@ export async function handleGetUserRecipes(req: Request, res: Response) {
   const userId = req.user?.id!;
   const recipes = await recipesService.getUserRecipes(userId);
   res.json(recipes);
+}
+
+export async function handleGetUserSavedRecipes(req: Request, res: Response) {
+  const userId = req.user?.id!;
+  const recipes = await recipesService.getUserSavedRecipes(userId);
+  res.json(recipes)
 }
 
 export async function handleGetRecipe(req: Request, res: Response) {

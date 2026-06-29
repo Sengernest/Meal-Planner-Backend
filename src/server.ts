@@ -25,6 +25,7 @@ import {
   handleGetRecipe,
   handleGetSampleRecipes,
   handleGetUserRecipes,
+  handleGetUserSavedRecipes,
   handleUpdateRecipe,
 } from "./handlers/recipes";
 import { requireAuth } from "./middleware/auth";
@@ -107,6 +108,7 @@ app.get("/foods/search", handleSearchFoods);
 app.get("/recipes", requireAuth, handleGetAllRecipes);
 app.get("/recipes/samples", handleGetSampleRecipes);
 app.get("/me/recipes", requireAuth, handleGetUserRecipes);
+app.get("/recipes/saved", requireAuth, handleGetUserSavedRecipes);
 app.get("/recipes/:id", requireAuth, idValidator(), handleGetRecipe);
 app.post(
   "/recipes",
