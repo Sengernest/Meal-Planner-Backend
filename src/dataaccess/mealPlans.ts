@@ -1,4 +1,4 @@
-import { and, eq, isNull, or, SQL } from "drizzle-orm";
+import { and, eq, inArray, isNull, or, SQL } from "drizzle-orm";
 import db from "../db/db";
 import {
   foodsToMealPlansTable,
@@ -122,50 +122,11 @@ async function getAllMealPlans(userId: number): Promise<MealPlan[]> {
 async function getUserSavedMealPlans(userId: number): Promise<MealPlan[]> {
   const savedMealPlans = await db.query.savedMealPlansTable.findMany({
     where: eq(savedMealPlansTable.userId, userId),
-    with: {
-      mealPlan: {
-        with: {
-          recipeItems: {
-            with: {
-              recipe: {
-                with: {
-                  ingredients: {
-                    with: {
-                      food: {
-                        with: {
-                          units: {
-                            with: {
-                              unit: true,
-                            },
-                          },
-                        },
-                      },
-                      unit: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-          foodItems: {
-            with: {
-              food: {
-                with: {
-                  units: {
-                    with: {
-                      unit: true,
-                    },
-                  },
-                },
-              },
-              unit: true,
-            },
-          },
-        },
-      },
-    },
   });
-  return savedMealPlans.map((savedMealPlan) => savedMealPlan.mealPlan);
+  const savedMealPlanIds = savedMealPlans.map(
+    (savedMealPlan) => savedMealPlan.mealPlanId,
+  );
+  return getMealPlans(inArray(mealPlansTable.id, savedMealPlanIds));
 }
 
 async function createMealPlan(

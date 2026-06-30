@@ -2,7 +2,8 @@ import { Request, Response } from "express";
 import { mealPlansService } from "../services/mealPlans";
 
 export async function handleGetSampleMealPlans(req: Request, res: Response) {
-  const mealPlans = await mealPlansService.getSampleMealPlans();
+  const userId = req.user?.id!;
+  const mealPlans = await mealPlansService.getSampleMealPlans(userId);
   res.json(mealPlans);
 }
 
@@ -15,7 +16,8 @@ export async function handleGetUserMealPlans(req: Request, res: Response) {
 
 export async function handleGetMealPlan(req: Request, res: Response) {
   const mealPlanId = Number(req.params.id);
-  const mealPlan = await mealPlansService.getMealPlan(mealPlanId);
+  const userId = req.user?.id!;
+  const mealPlan = await mealPlansService.getMealPlan(mealPlanId, userId);
   res.json(mealPlan);
 }
 

@@ -153,7 +153,7 @@ export const savedRecipesRelations = relations(
 
 export const recipesRelations = relations(recipesTable, ({ many }) => ({
   ingredients: many(foodsToRecipesTable),
-  savedByUsers: many(savedRecipesTable),
+  saves: many(savedRecipesTable),
 }));
 
 export const mealPlansTable = pgTable("meal_plans", {
@@ -235,6 +235,7 @@ export const recipesToMealPlansRelations = relations(
 export const mealPlansRelations = relations(mealPlansTable, ({ many }) => ({
   foodItems: many(foodsToMealPlansTable),
   recipeItems: many(recipesToMealPlansTable),
+  savedByUsers: many(savedMealPlansTable),
 }));
 
 export const savedMealPlansTable = pgTable(

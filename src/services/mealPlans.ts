@@ -109,24 +109,24 @@ async function isSavedByUser(
   return savedMealPlanIds.has(mealPlanId);
 }
 
-async function getSampleMealPlans(): Promise<MealPlanView[]> {
+async function getSampleMealPlans(userId: number): Promise<MealPlanView[]> {
   const mealPlans = await mealPlansRepository.getSampleMealPlans();
-  return Promise.all(mealPlans.map((mealPlan) => getMealPlan(mealPlan.id)));
+  return Promise.all(mealPlans.map((mealPlan) => getMealPlan(mealPlan.id, userId)));
 }
 
 async function getUserMealPlans(userId: number): Promise<MealPlanView[]> {
   const mealPlans = await mealPlansRepository.getUserMealPlans(userId);
-  return Promise.all(mealPlans.map((mealPlan) => getMealPlan(mealPlan.id)));
+  return Promise.all(mealPlans.map((mealPlan) => getMealPlan(mealPlan.id, userId)));
 }
 
 async function getAllMealPlans(userId: number): Promise<MealPlanView[]> {
   const mealPlans = await mealPlansRepository.getAllMealPlans(userId);
-  return Promise.all(mealPlans.map((mealPlan) => getMealPlan(mealPlan.id)));
+  return Promise.all(mealPlans.map((mealPlan) => getMealPlan(mealPlan.id, userId)));
 }
 
 async function getSavedMealPlans(userId: number): Promise<MealPlanView[]> {
   const mealPlans = await mealPlansRepository.getUserSavedMealPlans(userId);
-  return Promise.all(mealPlans.map((mealPlan) => getMealPlan(mealPlan.id)));
+  return Promise.all(mealPlans.map((mealPlan) => getMealPlan(mealPlan.id, userId)));
 }
 
 async function createMealPlan(schema: MealPlanSchema, userId: number) {

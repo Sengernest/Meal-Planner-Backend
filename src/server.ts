@@ -135,7 +135,7 @@ app.delete("/recipes/:id/save", requireAuth, idValidator(), handleUnsaveRecipe)
 
 // Meal plans
 app.get("/meal-plans", requireAuth, handleGetAllMealPlans);
-app.get("/meal-plans/samples", handleGetSampleMealPlans);
+app.get("/meal-plans/samples", requireAuth, handleGetSampleMealPlans);
 app.get("/me/meal-plans", requireAuth, handleGetUserMealPlans);
 app.get("/meal-plans/saved", requireAuth, handleGetSavedMealPlans)
 app.get("/meal-plans/:id", requireAuth, idValidator(), handleGetMealPlan);
