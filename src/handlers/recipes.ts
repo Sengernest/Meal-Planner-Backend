@@ -8,7 +8,7 @@ export async function handleGetAllRecipes(req: Request, res: Response) {
 }
 
 export async function handleGetSampleRecipes(req: Request, res: Response) {
-  const userId = req.user?.id;
+  const userId = req.user?.id!;
   const recipes = await recipesService.getSampleRecipes(userId);
   res.json(recipes);
 }
@@ -22,7 +22,7 @@ export async function handleGetUserRecipes(req: Request, res: Response) {
 export async function handleGetUserSavedRecipes(req: Request, res: Response) {
   const userId = req.user?.id!;
   const recipes = await recipesService.getUserSavedRecipes(userId);
-  res.json(recipes)
+  res.json(recipes);
 }
 
 export async function handleGetRecipe(req: Request, res: Response) {
@@ -59,8 +59,8 @@ export async function handleDeleteRecipe(req: Request, res: Response) {
 export async function handleSaveRecipe(req: Request, res: Response) {
   const recipeId = Number(req.params.id);
   const userId = req.user?.id!;
-  await recipesService.saveRecipe(recipeId, userId)
-  res.json({message: `Saved recipe: ${recipeId}`})
+  await recipesService.saveRecipe(recipeId, userId);
+  res.json({ message: `Saved recipe: ${recipeId}` });
 }
 
 export async function handleUnsaveRecipe(req: Request, res: Response) {

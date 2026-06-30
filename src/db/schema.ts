@@ -237,6 +237,33 @@ export const mealPlansRelations = relations(mealPlansTable, ({ many }) => ({
   recipeItems: many(recipesToMealPlansTable),
 }));
 
+export const savedMealPlansTable = pgTable(
+  "saved_meal_plans",
+  {
+    userId: integer("user_id")
+      .references(() => usersTable.id)
+      .notNull(),
+    mealPlanId: integer("meal_plan_id")
+      .references(() => mealPlansTable.id)
+      .notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.userId, table.mealPlanId] })],
+);
+
+export const savedMealPlansRelations = relations(
+  savedMealPlansTable,
+  ({ one }) => ({
+    user: one(usersTable, {
+      fields: [savedMealPlansTable.userId],
+      references: [usersTable.id],
+    }),
+    mealPlan: one(mealPlansTable, {
+      fields: [savedMealPlansTable.mealPlanId],
+      references: [mealPlansTable.id],
+    }),
+  }),
+);
+
 export const foodEntriesTable = pgTable("food_entries", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   userId: integer("user_id")

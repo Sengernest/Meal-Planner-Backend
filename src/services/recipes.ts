@@ -32,7 +32,7 @@ async function getAllRecipes(userId: number): Promise<RecipeView[]> {
 }
 
 // Get sample recipes (accessible to any user)
-async function getSampleRecipes(userId?: number): Promise<RecipeView[]> {
+async function getSampleRecipes(userId: number): Promise<RecipeView[]> {
   const recipes = await recipesRepository.getSampleRecipes();
   return Promise.all(
     recipes.map((recipe) => withIsSaved(withNutrition(recipe), userId)),

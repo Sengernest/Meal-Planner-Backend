@@ -109,7 +109,7 @@ app.get("/foods/search", handleSearchFoods);
 
 // Recipes
 app.get("/recipes", requireAuth, handleGetAllRecipes);
-app.get("/recipes/samples", handleGetSampleRecipes);
+app.get("/recipes/samples", requireAuth, handleGetSampleRecipes);
 app.get("/me/recipes", requireAuth, handleGetUserRecipes);
 app.get("/recipes/saved", requireAuth, handleGetUserSavedRecipes);
 app.get("/recipes/:id", requireAuth, idValidator(), handleGetRecipe);
