@@ -59,7 +59,7 @@ async function getMealEntry(
 
   const foodEntriesWithNutrition = foodEntries.map((foodEntry) => ({
     ...foodEntry,
-    nutrition: foodItemToWithNutrition(foodEntry).nutrition,
+    nutrition: roundNutrition(foodItemToWithNutrition(foodEntry).nutrition),
   }));
 
   const recipeEntriesWithNutrition = recipeEntries.map(
@@ -69,9 +69,8 @@ async function getMealEntry(
   return {
     foodEntries: foodEntriesWithNutrition,
     recipeEntries: recipeEntriesWithNutrition,
-    nutrition: sumNutrition(
-      ...foodEntriesWithNutrition,
-      ...recipeEntriesWithNutrition,
+    nutrition: roundNutrition(
+      sumNutrition(...foodEntriesWithNutrition, ...recipeEntriesWithNutrition),
     ),
   };
 }

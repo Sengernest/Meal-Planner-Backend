@@ -9,7 +9,7 @@ import {
 } from "../types";
 
 function roundValue(value: number) {
-  return Math.round(value * 10) / 10;
+  return Math.round(value);
 }
 
 export function roundNutrition(nutrition: Nutrition): Nutrition {
