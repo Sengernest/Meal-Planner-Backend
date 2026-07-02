@@ -1,5 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import db from "../db/db";
+import { FoodEntryUpdateSchema, foodEntryUpdateSchema } from "../dto/mealLogs";
 import {
   foodEntriesTable,
   foodsToRecipeEntriesTable,
@@ -162,7 +163,7 @@ async function addRecipeEntry(
 
 async function updateFoodEntry(
   entryId: number,
-  schema: FoodEntrySchema,
+  schema: FoodEntryUpdateSchema,
 ): Promise<FoodEntry | undefined> {
   const [foodEntry] = await db
     .update(foodEntriesTable)

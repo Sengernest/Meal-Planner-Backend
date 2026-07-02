@@ -3,6 +3,7 @@ import { mealPlansRepository } from "../dataaccess/mealPlans";
 import { recipesRepository } from "../dataaccess/recipes";
 import {
   FoodEntrySchema,
+  FoodEntryUpdateSchema,
   ImportAllFromMealPlanSchema,
   ImportFromMealPlanSchema,
   RecipeEntrySchema,
@@ -134,7 +135,7 @@ async function addRecipeEntry(
 
 async function updateFoodEntry(
   entryId: number,
-  schema: FoodEntrySchema,
+  schema: FoodEntryUpdateSchema,
   userId: number,
 ): Promise<FoodEntry> {
   const entry = await mealLogsRepository.getFoodEntry(entryId);

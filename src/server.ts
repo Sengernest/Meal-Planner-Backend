@@ -37,6 +37,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import {
   foodEntrySchema,
+  foodEntryUpdateSchema,
   importAllFromMealPlanSchema,
   importFromMealPlanSchema,
   recipeEntrySchema,
@@ -132,14 +133,14 @@ app.put(
   handleUpdateRecipe,
 );
 app.delete("/recipes/:id", requireAuth, idValidator(), handleDeleteRecipe);
-app.post("/recipes/:id/save", requireAuth, idValidator(), handleSaveRecipe)
-app.delete("/recipes/:id/save", requireAuth, idValidator(), handleUnsaveRecipe)
+app.post("/recipes/:id/save", requireAuth, idValidator(), handleSaveRecipe);
+app.delete("/recipes/:id/save", requireAuth, idValidator(), handleUnsaveRecipe);
 
 // Meal plans
 app.get("/meal-plans", requireAuth, handleGetAllMealPlans);
 app.get("/meal-plans/samples", requireAuth, handleGetSampleMealPlans);
 app.get("/me/meal-plans", requireAuth, handleGetUserMealPlans);
-app.get("/meal-plans/saved", requireAuth, handleGetSavedMealPlans)
+app.get("/meal-plans/saved", requireAuth, handleGetSavedMealPlans);
 app.get("/meal-plans/:id", requireAuth, idValidator(), handleGetMealPlan);
 app.post(
   "/meal-plans",
@@ -155,10 +156,30 @@ app.put(
   handleUpdateMealPlan,
 );
 app.delete("/meal-plans/:id", requireAuth, idValidator(), handleDeleteMealPlan);
-app.post("/meal-plans/:id/active", requireAuth, idValidator(), handleActivateMealPlan);
-app.delete("/meal-plans/:id/active", requireAuth, idValidator(), handleDeactivateMealPlan)
-app.post("/meal-plans/:id/save", requireAuth, idValidator(), handleSaveMealPlan)
-app.delete("/meal-plans/:id/save", requireAuth, idValidator(), handleUnsaveMealPlan)
+app.post(
+  "/meal-plans/:id/active",
+  requireAuth,
+  idValidator(),
+  handleActivateMealPlan,
+);
+app.delete(
+  "/meal-plans/:id/active",
+  requireAuth,
+  idValidator(),
+  handleDeactivateMealPlan,
+);
+app.post(
+  "/meal-plans/:id/save",
+  requireAuth,
+  idValidator(),
+  handleSaveMealPlan,
+);
+app.delete(
+  "/meal-plans/:id/save",
+  requireAuth,
+  idValidator(),
+  handleUnsaveMealPlan,
+);
 
 // Meal logs
 app.get("/meal-logs", requireAuth, handleGetMealLog); // ?date=
@@ -178,7 +199,7 @@ app.put(
   "/meal-logs/food-entries/:id",
   requireAuth,
   idValidator(),
-  bodyValidator(foodEntrySchema),
+  bodyValidator(foodEntryUpdateSchema),
   handleUpdateFoodEntry,
 );
 app.put(

@@ -9,6 +9,11 @@ export const foodEntrySchema = z.object({
   amount: z.number().positive(),
 });
 
+export const foodEntryUpdateSchema = z.object({
+  unitId: z.int().positive(),
+  amount: z.number().positive(),
+});
+
 export const recipeEntrySchema = z.object({
   logDate: z.string(),
   mealSlot: z.enum(mealSlotEnum.enumValues),
@@ -17,8 +22,8 @@ export const recipeEntrySchema = z.object({
 });
 
 export const recipeEntryUpdateSchema = z.object({
-  servings: z.int().positive()
-})
+  servings: z.int().positive(),
+});
 
 export const importFromMealPlanSchema = z.object({
   logDate: z.string(),
@@ -30,11 +35,14 @@ export const importAllFromMealPlanSchema = z.object({
 });
 
 export type FoodEntrySchema = z.infer<typeof foodEntrySchema>;
+export type FoodEntryUpdateSchema = z.infer<typeof foodEntrySchema>;
 export type RecipeEntrySchema = z.infer<typeof recipeEntrySchema>;
-export type RecipeEntryUpdateSchema = z.infer<typeof recipeEntryUpdateSchema>
+export type RecipeEntryUpdateSchema = z.infer<typeof recipeEntryUpdateSchema>;
 export type ImportFromMealPlanSchema = z.infer<typeof importFromMealPlanSchema>;
-export type ImportAllFromMealPlanSchema = z.infer<typeof importAllFromMealPlanSchema>;
+export type ImportAllFromMealPlanSchema = z.infer<
+  typeof importAllFromMealPlanSchema
+>;
 
-export const  mealLogsQuerySchema = z.object({
-  date: z.string()
+export const mealLogsQuerySchema = z.object({
+  date: z.string(),
 });
