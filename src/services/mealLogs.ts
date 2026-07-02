@@ -6,6 +6,7 @@ import {
   ImportAllFromMealPlanSchema,
   ImportFromMealPlanSchema,
   RecipeEntrySchema,
+  RecipeEntryUpdateSchema,
 } from "../dto/mealLogs";
 import { NotFoundError, UnauthorizedError } from "../errors/errors";
 import {
@@ -60,9 +61,7 @@ async function getMealEntry(
     nutrition: foodItemToWithNutrition(foodEntry).nutrition,
   }));
 
-  const recipeEntriesWithNutrition = recipeEntries.map((recipeEntry) =>
-    recipeEntryToWithNutrition(recipeEntry),
-  );
+  const recipeEntriesWithNutrition = recipeEntries.map(recipeEntryToWithNutrition);
 
   return {
     foodEntries: foodEntriesWithNutrition,
@@ -120,6 +119,7 @@ async function addRecipeEntry(
     schema,
     recipe.name,
     recipe.servings,
+    recipe.ingredients
   );
   if (!recipeEntry) {
     throw new NotFoundError();
@@ -151,7 +151,7 @@ async function updateFoodEntry(
 
 async function updateRecipeEntry(
   entryId: number,
-  schema: RecipeEntrySchema,
+  schema: RecipeEntryUpdateSchema,
   userId: number,
 ): Promise<RecipeEntry> {
   const entry = await mealLogsRepository.getRecipeEntry(entryId);

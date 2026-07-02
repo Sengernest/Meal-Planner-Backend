@@ -40,6 +40,7 @@ import {
   importAllFromMealPlanSchema,
   importFromMealPlanSchema,
   recipeEntrySchema,
+  recipeEntryUpdateSchema,
 } from "./dto/mealLogs";
 import { handleGetFoods, handleSearchFoods } from "./handlers/foods";
 import {
@@ -184,7 +185,7 @@ app.put(
   "/meal-logs/recipe-entries/:id",
   requireAuth,
   idValidator(),
-  bodyValidator(recipeEntrySchema),
+  bodyValidator(recipeEntryUpdateSchema),
   handleUpdateRecipeEntry,
 );
 app.post(

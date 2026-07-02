@@ -1,15 +1,25 @@
 import { and, eq } from "drizzle-orm";
 import db from "../db/db";
-import { foodEntriesTable, recipeEntriesTable } from "../db/schema";
+import {
+  foodEntriesTable,
+  foodsToRecipeEntriesTable,
+  foodsToRecipesTable,
+  recipeEntriesTable,
+} from "../db/schema";
 import {
   FoodEntrySchema,
   ImportAllFromMealPlanSchema,
   ImportFromMealPlanSchema,
   RecipeEntrySchema,
+  RecipeEntryUpdateSchema,
 } from "../dto/mealLogs";
-import { FoodEntry, MealPlan, MealSlot, RecipeEntry } from "../types";
-import { BusinessError } from "../errors/errors";
-import { mealPlansRepository } from "./mealPlans";
+import {
+  FoodEntry,
+  Ingredient,
+  MealPlan,
+  MealSlot,
+  RecipeEntry,
+} from "../types";
 
 // Gets all food entries logged by the user on this date for this meal slot
 async function getFoodEntries(
@@ -127,11 +137,26 @@ async function addRecipeEntry(
   schema: RecipeEntrySchema,
   recipeName: string,
   recipeServings: number,
+  ingredients: Ingredient[],
 ): Promise<RecipeEntry | undefined> {
-  const [recipeEntry] = await db
-    .insert(recipeEntriesTable)
-    .values({ ...schema, userId, recipeName, recipeServings })
-    .returning();
+  const recipeEntry = await db.transaction(async (tx) => {
+    const [recipeEntry] = await tx
+      .insert(recipeEntriesTable)
+      .values({ ...schema, userId, recipeName, recipeServings })
+      .returning();
+
+    // Insert ingredients
+    for (const ingredient of ingredients) {
+      await tx.insert(foodsToRecipeEntriesTable).values({
+        foodId: ingredient.foodId,
+        unitId: ingredient.unitId,
+        amount: ingredient.amount,
+        recipeEntryId: recipeEntry.id,
+      });
+    }
+
+    return recipeEntry;
+  });
   return getRecipeEntry(recipeEntry.id);
 }
 
@@ -149,7 +174,7 @@ async function updateFoodEntry(
 
 async function updateRecipeEntry(
   entryId: number,
-  schema: RecipeEntrySchema,
+  schema: RecipeEntryUpdateSchema,
 ): Promise<RecipeEntry | undefined> {
   const [recipeEntry] = await db
     .update(recipeEntriesTable)
